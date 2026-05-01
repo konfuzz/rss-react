@@ -1,11 +1,17 @@
+import { Component } from "react";
+import { SearchSection } from "./components/SearchSection";
+import { ResultSection } from "./components/ResultSection";
 
-function App() {
+class App extends Component {
 
-  return (
-    <>
-      <h1>Welcome to RS React!</h1>
-    </>
-  )
+  render() {
+    return (
+      <div className="container">
+        <SearchSection />
+        <ResultSection />
+      </div>
+    )
+  }
 }
 
 export default App
