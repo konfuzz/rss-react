@@ -1,13 +1,16 @@
 import { Component } from "react";
 
-export class SearchSection extends Component {
+interface Props {
+  searchHandler: (e: React.SubmitEvent<HTMLFormElement>) => void;
+}
+export class SearchSection extends Component<Props> {
   render() {
     return (
       <section className="search">
-        <div className="search__inner">
-          <input type="text" placeholder="Search recipes..." />
-          <button>Search</button>
-        </div>
+        <form className="search__inner" onSubmit={this.props.searchHandler}>
+          <input name="query" type="text" placeholder="Search recipes..." />
+          <button type="submit">Search</button>
+        </form>
       </section>
     )
   }
