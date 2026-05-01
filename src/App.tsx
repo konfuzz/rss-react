@@ -8,6 +8,7 @@ const API_URL = "https://dummyjson.com/recipes";
 interface AppState {
   recipes: Recipe[];
   loading: boolean;
+  query: string;
 }
 
 class App extends Component<Record<string, never>, AppState> {
@@ -15,6 +16,7 @@ class App extends Component<Record<string, never>, AppState> {
   state: AppState = {
     recipes: [],
     loading: true,
+    query: "",
   }
 
   async fetchData(query: string = "") {
@@ -42,19 +44,27 @@ class App extends Component<Record<string, never>, AppState> {
   handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const query = formData.get("query");
+    const value = formData.get("query");
 
-    this.fetchData(query as string);
+    const query = typeof value === "string" ? value.trim() : "";
+
+    if (query === this.state.query) return;
+
+    window.localStorage.setItem("lastQuery", query);
+    this.setState({ query });
+    this.fetchData(query);
   }
 
   componentDidMount() {
-    this.fetchData();
+    const lastQuery = window.localStorage.getItem("lastQuery");
+    this.setState({ query: lastQuery || "" });
+    this.fetchData(lastQuery || "");
   }
 
   render() {
     return (
       <div className="container">
-        <SearchSection searchHandler={this.handleSearch} />
+        <SearchSection searchHandler={this.handleSearch} query={this.state.query} />
         <ResultSection items={this.state.recipes} loading={this.state.loading} />
       </div>
     )
