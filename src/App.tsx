@@ -16,7 +16,7 @@ class App extends Component<Record<string, never>, AppState> {
   state: AppState = {
     recipes: [],
     loading: true,
-    query: "",
+    query: window.localStorage.getItem("lastQuery") || "",
   }
 
   async fetchData(query: string = "") {
@@ -56,9 +56,7 @@ class App extends Component<Record<string, never>, AppState> {
   }
 
   componentDidMount() {
-    const lastQuery = window.localStorage.getItem("lastQuery");
-    this.setState({ query: lastQuery || "" });
-    this.fetchData(lastQuery || "");
+    this.fetchData(this.state.query);
   }
 
   render() {
