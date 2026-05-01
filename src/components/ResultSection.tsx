@@ -1,11 +1,16 @@
 import { Component } from "react";
 import { Card } from "./Card";
+import type { Recipe } from "../types";
 
-export class ResultSection extends Component {
+interface Props {
+  items: Recipe[];
+}
+
+export class ResultSection extends Component<Props> {
   render() {
     return (
       <section className="results">
-        <Card />
+        {this.props.items.map((item: Recipe) => <Card key={item.id} data={item} />)}
       </section>
     )
   }
