@@ -3,16 +3,18 @@ import { SearchSection } from "./components/SearchSection";
 import { ResultSection } from "./components/ResultSection";
 import type { RecipesResponse, Recipe } from "./types";
 
-const API_URL = "https://dummyjson.com/recipes";
+const API_URL = "https://dummyjson.com/recipes?delay=1000";
 
 interface AppState {
   recipes: Recipe[];
+  loading: boolean;
 }
 
 class App extends Component<Record<string, never>, AppState> {
 
   state: AppState = {
-    recipes: []
+    recipes: [],
+    loading: true,
   }
 
   async fetchData() {
@@ -21,7 +23,7 @@ class App extends Component<Record<string, never>, AppState> {
 
     const recipes = json.recipes;
 
-    this.setState({ recipes });
+    this.setState({ recipes, loading: false });
   }
 
   componentDidMount() {
@@ -32,7 +34,7 @@ class App extends Component<Record<string, never>, AppState> {
     return (
       <div className="container">
         <SearchSection />
-        <ResultSection items={this.state.recipes} />
+        <ResultSection items={this.state.recipes} loading={this.state.loading} />
       </div>
     )
   }
