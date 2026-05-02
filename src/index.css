@@ -77,7 +77,7 @@ body {
   gap: 18px;
 }
 
-.no-results {
+.no-results, .error-message {
   text-align: center;
   font-size: 18px;
 }

@@ -5,10 +5,21 @@ import type { Recipe } from "../types";
 interface Props {
   items: Recipe[];
   loading: boolean;
+  error: string | null;
 }
 
 export class ResultSection extends Component<Props> {
   render() {
+    if (this.props.error) {
+      return (
+        <section className="results">
+          <div className="error-message">
+            ⚠️ {this.props.error}
+          </div>
+        </section>
+      );
+    }
+    
     return (
       <section className="results">
         { this.props.loading 
