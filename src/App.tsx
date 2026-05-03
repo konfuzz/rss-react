@@ -2,6 +2,8 @@ import { Component } from "react";
 import { SearchSection } from "./components/SearchSection";
 import { ResultSection } from "./components/ResultSection";
 import type { RecipesResponse, Recipe } from "./types";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { TestErrorButton } from "./components/TestErrorButton";
 
 const API_URL = "https://dummyjson.com/recipes";
 
@@ -78,10 +80,13 @@ class App extends Component<Record<string, never>, AppState> {
 
   render() {
     return (
+      <ErrorBoundary>
       <div className="container">
         <SearchSection searchHandler={this.handleSearch} query={this.state.query} />
         <ResultSection items={this.state.recipes} loading={this.state.loading} error={this.state.error} />
+        <TestErrorButton />
       </div>
+      </ErrorBoundary>
     )
   }
 }
