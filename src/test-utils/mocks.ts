@@ -1,4 +1,5 @@
 import type { Recipe } from '../types'
+
 export const mockRecipe: Recipe = {
   id: 1,
   name: "Classic Margherita Pizza",
