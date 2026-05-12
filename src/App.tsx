@@ -14,7 +14,7 @@ interface AppState {
   error: string | null;
 }
 
-class App extends Component<Record<string, never>, AppState> {
+export class App extends Component<Record<string, never>, AppState> {
 
   state: AppState = {
     recipes: [],
