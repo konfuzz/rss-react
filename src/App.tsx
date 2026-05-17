@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { SearchSection } from "./components/SearchSection";
 import { ResultSection } from "./components/ResultSection";
 import type { RecipesResponse, Recipe } from "./types";
@@ -14,50 +14,62 @@ interface AppState {
   error: string | null;
 }
 
-export class App extends Component<Record<string, never>, AppState> {
-
-  state: AppState = {
+export default function App() {
+  const [state, setState] = useState<AppState>({
     recipes: [],
     loading: true,
     query: window.localStorage.getItem("lastQuery") || "",
     error: null,
-  }
+  });
 
-  async fetchData(query: string = "") {
-    this.setState({ loading: true, error: null });
+  useEffect(() => {
+    const controller = new AbortController();
 
-    let url: URL;
+    const fetchData = async (query: string = "") => {
+      setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    if (query) {
-      url = new URL(API_URL + "/search");
-      url.searchParams.set("q", query);
-    } else {
-      url = new URL(API_URL);
-    }
+      let url: URL;
 
-    url.searchParams.set("delay", "1000");
-
-    try {
-      const data = await fetch(url);
-
-      if (!data.ok) {
-        throw new Error(`Server error: ${data.status}`);
+      if (query) {
+        url = new URL(API_URL + "/search");
+        url.searchParams.set("q", query);
+      } else {
+        url = new URL(API_URL);
       }
 
-      const json: RecipesResponse = await data.json();
+      url.searchParams.set("delay", "1000");
 
-      const recipes = json.recipes;
-      this.setState({ recipes, loading: false });
-    } catch {
-      this.setState({
-        error: "Failed to load recipes. Please try again later.",
-        loading: false,
-        recipes: []
-      });
-    }    
-  }
+      try {
+        const data = await fetch(url, { signal: controller.signal });
 
-  handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
+        if (!data.ok) {
+          throw new Error(`Server error: ${data.status}`);
+        }
+
+        const json: RecipesResponse = await data.json();
+
+        const recipes = json.recipes;
+        if (!controller.signal.aborted) {
+          setState((prev) => ({ ...prev, recipes, loading: false }));
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setState((prev) => ({
+            ...prev,
+            error: "Failed to load recipes. Please try again later.",
+            loading: false,
+            recipes: [],
+          }));
+        }
+      }
+    };
+
+    fetchData(state.query);
+
+    return () => controller.abort();
+  }, [state.query]);
+
+  const handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const value = formData.get("query");
@@ -65,30 +77,16 @@ export class App extends Component<Record<string, never>, AppState> {
     const query = typeof value === "string" ? value.trim() : "";
 
     window.localStorage.setItem("lastQuery", query);
-    this.setState({ query });
+    setState((prev) => ({ ...prev, query }));
   }
 
-  componentDidMount() {
-    this.fetchData(this.state.query);
-  }
-
-  componentDidUpdate(_: Record<string, never>, prevState: AppState) {
-    if (prevState.query !== this.state.query) {
-      this.fetchData(this.state.query);
-    }
-  }
-
-  render() {
-    return (
-      <ErrorBoundary>
+  return (
+    <ErrorBoundary>
       <div className="container">
-        <SearchSection searchHandler={this.handleSearch} query={this.state.query} />
-        <ResultSection items={this.state.recipes} loading={this.state.loading} error={this.state.error} />
+        <SearchSection searchHandler={handleSearch} query={state.query} />
+        <ResultSection items={state.recipes} loading={state.loading} error={state.error} />
         <TestErrorButton />
       </div>
-      </ErrorBoundary>
-    )
-  }
+    </ErrorBoundary>
+  );
 }
-
-export default App
