@@ -334,3 +334,39 @@ button:hover {
 .not-found .button:hover {
   background: var(--primary-hover);
 }
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination ul {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: inherit;
+}
+
+.pagination button:hover, .pagination button.active {
+  background: var(--primary);
+  color: var(--card-bg);
+}

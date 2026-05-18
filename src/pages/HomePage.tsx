@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { SearchSection } from "../components/SearchSection";
 import { ResultSection } from "../components/ResultSection";
+import { Pagination } from "../components/Pagination";
 import type { RecipesResponse, Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
+import { useSearchParams } from "react-router";
 
-const API_URL = "https://dummyjson.com/recipes";
+const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
+const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
 
 interface AppState {
   recipes: Recipe[];
   loading: boolean;
   query: string;
   error: string | null;
+  total: number;
 }
 
 export default function HomePage() {
@@ -19,13 +23,23 @@ export default function HomePage() {
     loading: true,
     query: window.localStorage.getItem("lastQuery") || "",
     error: null,
+    total: 0,
   });
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const getPageFromParams = () => {
+    const rawPage = searchParams.get("page");
+    return rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
+  }
+
   useEffect(() => {
+    const page = getPageFromParams();
+
     const controller = new AbortController();
 
-    const fetchData = async (query: string = "") => {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
+    const fetchData = async (query: string = "", page: number = 1) => {
+      setState((prev) => ({ ...prev, loading: true, error: null, total: 0 }));
 
       let url: URL;
 
@@ -37,6 +51,8 @@ export default function HomePage() {
       }
 
       url.searchParams.set("delay", "1000");
+      url.searchParams.set("limit", ITEMS_PER_PAGE.toString());
+      url.searchParams.set("skip", ((page - 1) * ITEMS_PER_PAGE).toString());
 
       try {
         const data = await fetch(url, { signal: controller.signal });
@@ -47,9 +63,9 @@ export default function HomePage() {
 
         const json: RecipesResponse = await data.json();
 
-        const recipes = json.recipes;
+        const {recipes, total} = json;
         if (!controller.signal.aborted) {
-          setState((prev) => ({ ...prev, recipes, loading: false }));
+          setState((prev) => ({ ...prev, recipes, loading: false, total: total }));
         }
       } catch {
         if (!controller.signal.aborted) {
@@ -58,15 +74,16 @@ export default function HomePage() {
             error: "Failed to load recipes. Please try again later.",
             loading: false,
             recipes: [],
+            total: 0,
           }));
         }
       }
     };
 
-    fetchData(state.query);
+    fetchData(state.query, page);
 
     return () => controller.abort();
-  }, [state.query]);
+  }, [state.query, searchParams]);
 
   const handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -76,13 +93,22 @@ export default function HomePage() {
     const query = typeof value === "string" ? value.trim() : "";
 
     window.localStorage.setItem("lastQuery", query);
-    setState((prev) => ({ ...prev, query }));
+    setState((prev) => ({ ...prev, query, currentPage: 0 }));
+    setSearchParams({ page: "1" });
+  }
+
+  const handlePageChange = (page: number) => {
+    setState((prev) => ({ ...prev, currentPage: page }));
+    setSearchParams({ page: String(page) });
   }
 
   return (
     <div className="container">
       <SearchSection searchHandler={handleSearch} query={state.query} />
       <ResultSection items={state.recipes} loading={state.loading} error={state.error} />
+      {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
+        <Pagination currentPage={getPageFromParams()} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+      )}
       <TestErrorButton />
     </div>
   );
