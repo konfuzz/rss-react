@@ -3,7 +3,7 @@ import { Card } from '../Card'
 import { mockRecipe } from '../../test-utils/mocks'
 
 it('renders all recipe information', () => {
-  render(<Card data={mockRecipe} />)
+  render(<Card data={mockRecipe} onSelect={vi.fn()} />)
 
   expect(screen.getByText(mockRecipe.name)).toBeInTheDocument()
   expect(screen.getByText(mockRecipe.difficulty)).toBeInTheDocument()

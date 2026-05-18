@@ -2,13 +2,18 @@ import type { Recipe } from "../types";
 
 interface Props {
   data: Recipe;
+  onSelect: (id: number) => void;
 }
 
 export function Card(props: Props) {
-  const { data } = props;
+  const { data, onSelect } = props;
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onSelect?.(data.id);
+  }
 
   return (
-    <div className="card">
+    <div className="card" onClick={handleClick} tabIndex={0} role="button">
       <img src={data.image} alt={data.name} />
 
       <div className="card__content">

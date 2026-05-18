@@ -5,7 +5,7 @@ import { ResultSection } from "../components/ResultSection";
 import { Pagination } from "../components/Pagination";
 import type { RecipesResponse, Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
-import { useSearchParams } from "react-router";
+import { useSearchParams, Outlet } from "react-router";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
 const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
@@ -18,15 +18,18 @@ interface AppState {
 }
 
 export default function HomePage() {
+  
   const [state, setState] = useState<AppState>({
     recipes: [],
     loading: true,
     error: null,
     total: 0,
   });
-
+  
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useLocalStorage("lastQuery", "");
+  
+  const hasDetails = !!searchParams.get('details');
 
   const rawPage = searchParams.get("page");
   const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
@@ -96,14 +99,34 @@ export default function HomePage() {
     setSearchParams({ page: String(page) });
   }
 
+  const handleSelectRecipe = (id: number) => {
+    setSearchParams((prev) => { prev.set('details', String(id)); return prev; });
+  }
+
+  const handleClosePanel = () => {
+    setSearchParams((prev) => { prev.delete('details'); return prev; });
+  };
+
   return (
-    <div className="container">
-      <SearchSection searchHandler={handleSearch} query={query} />
-      <ResultSection items={state.recipes} loading={state.loading} error={state.error} />
-      {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
-        <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+    <div className={hasDetails ? "container container--split" : "container"}>
+      <div className="left-panel">
+        <SearchSection searchHandler={handleSearch} query={query} />
+        <ResultSection
+          items={state.recipes}
+          loading={state.loading}
+          error={state.error}
+          onSelect={handleSelectRecipe}
+        />
+        {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
+          <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+        )}
+        <TestErrorButton />
+      </div>
+      {hasDetails && (
+        <div className="right-panel">
+          <Outlet context={{ onClose: handleClosePanel }} />
+        </div>
       )}
-      <TestErrorButton />
     </div>
   );
 }

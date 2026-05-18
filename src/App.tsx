@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import RecipeDetail from "./pages/RecipeDetail";
 
 
 export default function App() {
@@ -11,7 +12,9 @@ export default function App() {
     <ErrorBoundary>
       <Header />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomePage />}>
+          <Route index element={<RecipeDetail />} />
+        </Route>
         <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
