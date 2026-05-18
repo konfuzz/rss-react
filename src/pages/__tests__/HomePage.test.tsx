@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import HomePage from '../HomePage.tsx'
 import userEvent from '@testing-library/user-event'
-import { mockRecipesResponse } from '../../test-utils/mocks.ts'
-import { MemoryRouter } from 'react-router'
+import { mockRecipe, mockRecipesResponse } from '../../test-utils/mocks.ts'
+import { MemoryRouter, Routes, Route, useOutletContext } from 'react-router'
+import type { FC } from 'react'
+
+const TestCloseButton: FC = () => {
+  const { onClose } = useOutletContext<{ onClose: () => void }>()
+  return <button onClick={onClose}>Close Detail</button>
+}
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {}
@@ -99,6 +105,98 @@ describe('HomePage', () => {
     await user.keyboard('{Enter}')
     expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', 'Salad')
     expect(window.localStorage.getItem('lastQuery')).toBe('Salad')
+  })
+
+  it('shows pagination when total items exceed page size', async () => {
+    const manyRecipes = {
+      recipes: Array.from({ length: 12 }, (_, i) => ({
+        ...mockRecipe,
+        id: i + 1,
+        name: `Recipe ${i + 1}`,
+      })),
+      total: 12,
+      skip: 0,
+      limit: 10,
+    }
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      createMockFetch(true, manyRecipes)
+    )
+    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    expect(await screen.findByText('1')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+  })
+
+  it('changes page via pagination', async () => {
+    const manyRecipes = {
+      recipes: Array.from({ length: 12 }, (_, i) => ({
+        ...mockRecipe,
+        id: i + 1,
+        name: `Recipe ${i + 1}`,
+      })),
+      total: 12,
+      skip: 0,
+      limit: 10,
+    }
+    const user = userEvent.setup()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      createMockFetch(true, manyRecipes)
+    )
+    fetchSpy.mockClear()
+    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    expect(await screen.findByText('1')).toBeInTheDocument()
+    fetchSpy.mockClear()
+    await user.click(screen.getByText('2'))
+    await waitFor(() => {
+      const lastCall = fetchSpy.mock.calls[fetchSpy.mock.calls.length - 1]?.[0]
+      if (typeof lastCall === 'string') {
+        expect(lastCall).toContain('skip=10')
+      } else if (lastCall instanceof URL) {
+        expect(lastCall.searchParams.get('skip')).toBe('10')
+      } else if (lastCall instanceof Request) {
+        expect(lastCall.url).toContain('skip=10')
+      }
+    })
+  })
+
+  it('opens recipe detail panel when clicking a card', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<MemoryRouter><HomePage /></MemoryRouter>)
+    expect(await screen.findByText(mockRecipe.name)).toBeInTheDocument()
+    const card = container.querySelector('.card') as HTMLElement
+    await user.click(card)
+    expect(container.querySelector('.container--split')).toBeInTheDocument()
+    expect(container.querySelector('.right-panel')).toBeInTheDocument()
+  })
+
+  it('renders split layout when details param is set', () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/?details=1']}>
+        <HomePage />
+      </MemoryRouter>
+    )
+    expect(container.querySelector('.container--split')).toBeInTheDocument()
+    expect(container.querySelector('.right-panel')).toBeInTheDocument()
+  })
+
+  it('closes detail panel via outlet context', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <MemoryRouter initialEntries={['/?details=1']}>
+        <Routes>
+          <Route element={<HomePage />}>
+            <Route
+              path="/"
+              element={<TestCloseButton />}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(container.querySelector('.container--split')).toBeInTheDocument()
+    expect(container.querySelector('.right-panel')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Close/ }))
+    expect(container.querySelector('.container--split')).not.toBeInTheDocument()
+    expect(container.querySelector('.right-panel')).not.toBeInTheDocument()
   })
 
   it('calls search API on form submit', async () => {
