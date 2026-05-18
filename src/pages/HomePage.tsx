@@ -93,12 +93,11 @@ export default function HomePage() {
     const query = typeof value === "string" ? value.trim() : "";
 
     window.localStorage.setItem("lastQuery", query);
-    setState((prev) => ({ ...prev, query, currentPage: 0 }));
+    setState((prev) => ({ ...prev, query }));
     setSearchParams({ page: "1" });
   }
 
   const handlePageChange = (page: number) => {
-    setState((prev) => ({ ...prev, currentPage: page }));
     setSearchParams({ page: String(page) });
   }
 
