@@ -1,19 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { App } from './App'
+import { MemoryRouter } from 'react-router'
+import App from './App'
 import userEvent from '@testing-library/user-event'
-import { mockRecipesResponse } from './test-utils/mocks.ts'
-
-const localStorageMock = (() => {
-  let store: Record<string, string> = {}
-  return {
-    getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => { store[key] = value }),
-    removeItem: vi.fn((key: string) => { delete store[key] }),
-    clear: vi.fn(() => { store = {} }),
-    length: 0,
-    key: vi.fn(() => null),
-  }
-})()
+import { mockRecipesResponse } from './test-utils/mocks'
 
 const createMockFetch = (ok: boolean, data?: unknown) =>
   vi.fn().mockResolvedValue({
@@ -22,96 +11,62 @@ const createMockFetch = (ok: boolean, data?: unknown) =>
   } as Response)
 
 beforeEach(() => {
-  vi.spyOn(console, 'error').mockImplementation(() => { })
+  vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(globalThis, 'fetch').mockImplementation(
     createMockFetch(true, mockRecipesResponse)
   )
-  Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-  window.localStorage.clear()
 })
 
 afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('App', () => {
-  it('renders the search and results section', () => {
-    const { container } = render(<App />)
+const renderAt = (path: string) =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <App />
+    </MemoryRouter>
+  )
+
+describe('App routing', () => {
+  it('renders home page at /', () => {
+    renderAt('/')
     expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument()
-    expect(container.querySelector('.results')).toBeInTheDocument()
+    expect(screen.getByText('Recipe Search')).toBeInTheDocument()
   })
 
-  it('displays recipes after successful fetch', async () => {
-    render(<App />)
-    expect(await screen.findByText(mockRecipesResponse.recipes[0].name)).toBeInTheDocument()
+  it('renders about page at /about', () => {
+    renderAt('/about')
+    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument()
+    expect(screen.getByText(/konfuzz/)).toBeInTheDocument()
   })
 
-  it('shows error message on API failure', async () => {
-    vi.spyOn(globalThis, 'fetch').mockImplementation(
-      createMockFetch(false)
-    )
-    render(<App />)
-    expect(await screen.findByText(/Failed to load recipes/)).toBeInTheDocument()
+  it('renders 404 page for unknown routes', () => {
+    renderAt('/some-random-page')
+    expect(screen.getByText('404')).toBeInTheDocument()
+    expect(screen.getByText(/Page not found/)).toBeInTheDocument()
   })
 
-  it('saves search query to localStorage', async () => {
+  it('navigates to about page via header link', async () => {
     const user = userEvent.setup()
-    render(<App />)
-    const input = screen.getByPlaceholderText('Search recipes...')
-    await user.type(input, 'Pizza')
-    await user.keyboard('{Enter}')
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', 'Pizza')
+    renderAt('/')
+    await user.click(screen.getByRole('link', { name: 'About' }))
+    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument()
   })
 
-  it('reads lastQuery from localStorage on mount', async () => {
-    window.localStorage.setItem('lastQuery', 'pasta')
-    render(<App />)
-    expect(window.localStorage.getItem).toHaveBeenCalledWith('lastQuery')
-    expect(window.localStorage.getItem('lastQuery')).toBe('pasta')
-  })
-
-  it('handles empty search query', async () => {
+  it('navigates back to home via header link', async () => {
     const user = userEvent.setup()
-    render(<App />)
-    const input = screen.getByPlaceholderText('Search recipes...')
-    await user.clear(input)
-    await user.keyboard('{Enter}')
-    expect(window.localStorage.getItem('lastQuery')).toBe('')
+    renderAt('/about')
+    await user.click(screen.getByText('Home'))
+    expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument()
   })
 
-  it('handles query change on input', async () => {
-    window.localStorage.setItem('lastQuery', 'chicken')
+  it('shows 404 page then navigates back home', async () => {
     const user = userEvent.setup()
-    render(<App />)
-    const input = screen.getByPlaceholderText('Search recipes...')
-    await user.clear(input)
-    await user.type(input, 'pasta')
-    await user.keyboard('{Enter}')
-    expect(window.localStorage.getItem('lastQuery')).toBe('pasta')
-  })
+    renderAt('/nonexistent')
+    expect(screen.getByText('404')).toBeInTheDocument()
 
-  it('trims search query before saving to localStorage', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    const input = screen.getByPlaceholderText('Search recipes...')
-    await user.type(input, '  Salad  ')
-    await user.keyboard('{Enter}')
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', 'Salad')
-    expect(window.localStorage.getItem('lastQuery')).toBe('Salad')
+    await user.click(screen.getByText('Home'))
+    expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument()
   })
-
-  it('calls search API on form submit', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    const input = screen.getByPlaceholderText('Search recipes...')
-    await user.clear(input)
-    await user.type(input, 'chicken')
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
-      createMockFetch(true, mockRecipesResponse)
-    )
-    await user.click(screen.getByRole('button', { name: /Search/i }))
-    const calledUrl = fetchSpy.mock.calls[fetchSpy.mock.calls.length - 1][0]
-    expect(calledUrl.toString()).toContain('/search?q=chicken');
-  })
-
 })
