@@ -425,11 +425,12 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  color: var(--text-light);
+  background: var(--primary-hover);
+  color: var(--card-bg);
   border: none;
   font-size: 18px;
   border-radius: 6px;
+  z-index: 1;
 }
 
 .detail-close:hover {
