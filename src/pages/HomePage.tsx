@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { SearchSection } from "../components/SearchSection";
 import { ResultSection } from "../components/ResultSection";
 import { Pagination } from "../components/Pagination";
@@ -12,7 +13,6 @@ const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
 interface AppState {
   recipes: Recipe[];
   loading: boolean;
-  query: string;
   error: string | null;
   total: number;
 }
@@ -21,12 +21,12 @@ export default function HomePage() {
   const [state, setState] = useState<AppState>({
     recipes: [],
     loading: true,
-    query: window.localStorage.getItem("lastQuery") || "",
     error: null,
     total: 0,
   });
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useLocalStorage("lastQuery", "");
 
   const getPageFromParams = () => {
     const rawPage = searchParams.get("page");
@@ -80,10 +80,10 @@ export default function HomePage() {
       }
     };
 
-    fetchData(state.query, page);
+    fetchData(query, page);
 
     return () => controller.abort();
-  }, [state.query, searchParams]);
+  }, [query, searchParams]);
 
   const handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -92,8 +92,7 @@ export default function HomePage() {
 
     const query = typeof value === "string" ? value.trim() : "";
 
-    window.localStorage.setItem("lastQuery", query);
-    setState((prev) => ({ ...prev, query }));
+    setQuery(query);
     setSearchParams({ page: "1" });
   }
 
@@ -103,7 +102,7 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      <SearchSection searchHandler={handleSearch} query={state.query} />
+      <SearchSection searchHandler={handleSearch} query={query} />
       <ResultSection items={state.recipes} loading={state.loading} error={state.error} />
       {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
         <Pagination currentPage={getPageFromParams()} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
