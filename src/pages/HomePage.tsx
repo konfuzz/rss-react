@@ -28,14 +28,10 @@ export default function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useLocalStorage("lastQuery", "");
 
-  const getPageFromParams = () => {
-    const rawPage = searchParams.get("page");
-    return rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
-  }
+  const rawPage = searchParams.get("page");
+  const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
 
   useEffect(() => {
-    const page = getPageFromParams();
-
     const controller = new AbortController();
 
     const fetchData = async (query: string = "", page: number = 1) => {
@@ -83,7 +79,7 @@ export default function HomePage() {
     fetchData(query, page);
 
     return () => controller.abort();
-  }, [query, searchParams]);
+  }, [query, page]);
 
   const handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,7 +101,7 @@ export default function HomePage() {
       <SearchSection searchHandler={handleSearch} query={query} />
       <ResultSection items={state.recipes} loading={state.loading} error={state.error} />
       {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
-        <Pagination currentPage={getPageFromParams()} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+        <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
       )}
       <TestErrorButton />
     </div>
