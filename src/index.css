@@ -228,3 +228,71 @@ button:hover {
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
 }
+
+/* HEADER NAV */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: normal;
+  color: var(--text);
+}
+
+.header nav {
+  display: flex;
+  gap: 20px;
+}
+
+.header nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.header nav a:hover,
+.header nav a.active {
+  color: var(--primary);
+}
+
+/* ABOUT PAGE */
+.about {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.about p {
+  margin: 0;
+  color: var(--text-light);
+  font-size: 15px;
+}
+
+.about a {
+  color: var(--primary);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.about a:hover {
+  color: var(--primary-hover);
+}
