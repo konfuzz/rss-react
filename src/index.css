@@ -17,6 +17,17 @@
   --shadow: 0 4px 12px rgba(60, 40, 20, 0.08);
 }
 
+html[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --card-bg: #2a2a2a;
+  --primary: #a16207;
+  --primary-hover: #854d0e;
+  --text: #fffaf3;
+  --text-light: #7c6a58;
+  --border: #e8dccb;
+  --tag-bg: #f1e4d1;
+}
+
 /* base */
 body {
   margin: 0;
