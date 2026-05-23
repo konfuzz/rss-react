@@ -1,18 +1,29 @@
 import { useSelectedStore } from "../store/useSelectedStore";
+import { generateCSV } from "../utils/generateCSV";
 
 export function Flyout() {
 
-  const { selectedIds, unselectAll } = useSelectedStore();
+  const { selectedRecipes, unselectAll } = useSelectedStore();
+  const handleDownload = () => {
+    const csv = generateCSV(Array.from(selectedRecipes));
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${selectedRecipes.size}_items.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="flyout">
-      <div className="selected">{selectedIds.size} selected</div>
+      <div className="selected">{selectedRecipes.size} selected</div>
       <button className="unselect" onClick={unselectAll}>
         Unselect All
       </button>
-      <a href="#" className="download-btn" download>
+      <button className="download-btn" onClick={handleDownload}>
         Download
-      </a>
+      </button>
     </div>
   )
 }

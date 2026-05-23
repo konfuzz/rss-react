@@ -1,21 +1,22 @@
 import { create } from 'zustand'
+import type { Recipe } from '../types'
 
 type Store = {
-  selectedIds: Set<number>
-  toggleIds: (id: number) => void
+  selectedRecipes: Set<Recipe>
+  toggleIds: (recipe: Recipe) => void
   unselectAll: () => void
 }
 
 export const useSelectedStore = create<Store>()((set) => ({
-  selectedIds: new Set(),
-  toggleIds: (id: number) => set((state) => {
-    const newSet = new Set(state.selectedIds);
-    if (newSet.has(id)) {
-      newSet.delete(id);
+  selectedRecipes: new Set(),
+  toggleIds: (recipe: Recipe) => set((state) => {
+    const newSet = new Set(state.selectedRecipes);
+    if (newSet.has(recipe)) {
+      newSet.delete(recipe);
     } else {
-      newSet.add(id);
+      newSet.add(recipe);
     }
-    return { selectedIds: newSet };
+    return { selectedRecipes: newSet };
   }),
-  unselectAll: () => set({ selectedIds: new Set() }),
+  unselectAll: () => set({ selectedRecipes: new Set() }),
 }))

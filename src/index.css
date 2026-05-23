@@ -66,7 +66,7 @@ body {
   border-color: var(--primary);
 }
 
-button, .download-btn {
+button {
   padding: 12px 18px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -80,7 +80,7 @@ button, .download-btn {
   text-decoration: none;
 }
 
-button:hover, .download-btn:hover {
+button:hover {
   background: var(--primary-hover);
 }
 
@@ -404,6 +404,10 @@ button:hover, .download-btn:hover {
   display: flex;
   gap: 18px;
 }
+.container--split {
+  position: relative;
+  align-items: flex-start;
+}
 .container .left-panel {
   width: 100%;
   transition: width 0.5s;
@@ -416,6 +420,8 @@ button:hover, .download-btn:hover {
 .right-panel {
   width: 40%;
   min-width: 280px;
+  position: sticky;
+  top: 1rem;
 }
 
 @media (max-width: 768px) {

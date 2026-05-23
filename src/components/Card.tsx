@@ -14,12 +14,12 @@ export function Card(props: Props) {
     onSelect?.(data.id);
   }
 
-  const { selectedIds, toggleIds } = useSelectedStore();
-  const isSelected = selectedIds.has(data.id);
+  const { selectedRecipes, toggleIds } = useSelectedStore();
+  const isSelected = selectedRecipes.has(data);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    toggleIds(data.id);
+    toggleIds(data);
   }
 
   return (

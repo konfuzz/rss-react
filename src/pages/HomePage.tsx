@@ -37,7 +37,7 @@ export default function HomePage() {
   const rawPage = searchParams.get("page");
   const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
 
-  const { selectedIds } = useSelectedStore();
+  const { selectedRecipes } = useSelectedStore();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -134,7 +134,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      {selectedIds.size > 0 && <Flyout />}
+      {selectedRecipes.size > 0 && <Flyout />}
     </>
   );
 }
