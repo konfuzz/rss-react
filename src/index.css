@@ -156,6 +156,7 @@ button:hover, .download-btn:hover {
   justify-content: space-between;
   flex: 1;
   gap: 8px;
+  position: relative;
 }
 
 /* HEADER */
@@ -215,6 +216,18 @@ button:hover, .download-btn:hover {
 .rating span {
   color: var(--text-light);
   font-size: 12px;
+}
+
+/* CHECKBOX */
+.checkbox {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+.checkbox input {
+  accent-color: var(--primary);
+  width: 20px;
+  height: 20px;
 }
 
 /* ERROR */

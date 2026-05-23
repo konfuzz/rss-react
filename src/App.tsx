@@ -8,7 +8,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import RecipeDetail from "./pages/RecipeDetail";
 import { AppContext } from "./context/AppContext";
 import { useLocalStorage } from "./hooks/useLocalStorage";
-import { Flyout } from "./components/Flyout";
+
 
 export default function App() {
   const [isDark, setIsDark] = useLocalStorage<boolean>("isDark", false);
@@ -33,7 +33,6 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-        <Flyout />
       </AppContext.Provider>
     </ErrorBoundary>
   );

@@ -6,9 +6,12 @@ import { Pagination } from "../components/Pagination";
 import type { RecipesResponse, Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
 import { useSearchParams, Outlet } from "react-router";
+import { Flyout } from "../components/Flyout";
+import { useSelectedStore } from "../store/useSelectedStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
 const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
+const FETCH_DELAY = import.meta.env.VITE_FETCH_DELAY || 1000;
 
 interface AppState {
   recipes: Recipe[];
@@ -34,6 +37,8 @@ export default function HomePage() {
   const rawPage = searchParams.get("page");
   const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
 
+  const { selectedIds } = useSelectedStore();
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -49,7 +54,7 @@ export default function HomePage() {
         url = new URL(API_URL);
       }
 
-      url.searchParams.set("delay", "1000");
+      url.searchParams.set("delay", FETCH_DELAY.toString());
       url.searchParams.set("limit", ITEMS_PER_PAGE.toString());
       url.searchParams.set("skip", ((page - 1) * ITEMS_PER_PAGE).toString());
 
@@ -108,25 +113,28 @@ export default function HomePage() {
   };
 
   return (
-    <div className={hasDetails ? "container container--split" : "container"}>
-      <div className="left-panel">
-        <SearchSection searchHandler={handleSearch} query={query} />
-        <ResultSection
-          items={state.recipes}
-          loading={state.loading}
-          error={state.error}
-          onSelect={handleSelectRecipe}
-        />
-        {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
-          <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
-        )}
-        <TestErrorButton />
-      </div>
-      {hasDetails && (
-        <div className="right-panel">
-          <Outlet context={{ onClose: handleClosePanel }} />
+    <>
+      <div className={hasDetails ? "container container--split" : "container"}>
+        <div className="left-panel">
+          <SearchSection searchHandler={handleSearch} query={query} />
+          <ResultSection
+            items={state.recipes}
+            loading={state.loading}
+            error={state.error}
+            onSelect={handleSelectRecipe}
+          />
+          {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
+            <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+          )}
+          <TestErrorButton />
         </div>
-      )}
-    </div>
+        {hasDetails && (
+          <div className="right-panel">
+            <Outlet context={{ onClose: handleClosePanel }} />
+          </div>
+        )}
+      </div>
+      {selectedIds.size > 0 && <Flyout />}
+    </>
   );
 }
