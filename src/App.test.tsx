@@ -15,6 +15,7 @@ beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockImplementation(
     createMockFetch(true, mockRecipesResponse)
   )
+  localStorage.clear()
 })
 
 afterEach(() => {
@@ -68,5 +69,36 @@ describe('App routing', () => {
 
     await user.click(screen.getByText('Home'))
     expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument()
+  })
+})
+
+describe('App theme', () => {
+  it('sets data-theme="light" by default', () => {
+    renderAt('/')
+    expect(document.documentElement.dataset.theme).toBe('light')
+  })
+  it('changes data-theme to "dark" when button is clicked', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(screen.getByRole('button', { name: /Mode/ }))
+    expect(document.documentElement.dataset.theme).toBe('dark')
+  })
+  it('toggles theme back to "light" on second click', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    const btn = screen.getByRole('button', { name: /Mode/ })
+    await user.click(btn)
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    await user.click(btn)
+    expect(document.documentElement.dataset.theme).toBe('light')
+  })
+  it('persists theme when navigating between pages', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(screen.getByRole('button', { name: /Mode/ }))
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    await user.click(screen.getByRole('link', { name: 'About' }))
+    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument()
+    expect(document.documentElement.dataset.theme).toBe('dark')
   })
 })
