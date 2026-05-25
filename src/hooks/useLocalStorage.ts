@@ -1,24 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export function useLocalStorage(
+export function useLocalStorage<T>(
   key: string,
-  defaultValue: string
-): [string, (value: string) => void] {
-  const [value, setValue] = useState<string>(() => {
+  defaultValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
     try {
       const stored = localStorage.getItem(key);
-      return stored !== null ? stored : defaultValue;
+      return stored !== null ? JSON.parse(stored) : defaultValue;
     } catch {
       return defaultValue;
     }
   });
-  const setAndPersist = (newValue: string) => {
+
+  useEffect(() => {
     try {
-      localStorage.setItem(key, newValue);
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (e) {
       console.error("Failed to save to localStorage:", e);
     }
-    setValue(newValue);
-  };
-  return [value, setAndPersist];
+  }, [key, value]);
+
+  return [value, setValue];
 }

@@ -67,14 +67,14 @@ describe('HomePage', () => {
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.type(input, 'Pizza')
     await user.keyboard('{Enter}')
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', 'Pizza')
+    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', '"Pizza"')
   })
 
   it('reads lastQuery from localStorage on mount', async () => {
-    window.localStorage.setItem('lastQuery', 'pasta')
+    window.localStorage.setItem('lastQuery', '"pasta"')
     render(<MemoryRouter><HomePage /></MemoryRouter>)
     expect(window.localStorage.getItem).toHaveBeenCalledWith('lastQuery')
-    expect(window.localStorage.getItem('lastQuery')).toBe('pasta')
+    expect(window.localStorage.getItem('lastQuery')).toBe('"pasta"')
   })
 
   it('handles empty search query', async () => {
@@ -83,7 +83,7 @@ describe('HomePage', () => {
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.clear(input)
     await user.keyboard('{Enter}')
-    expect(window.localStorage.getItem('lastQuery')).toBe('')
+    expect(window.localStorage.getItem('lastQuery')).toBe('""')
   })
 
   it('handles query change on input', async () => {
@@ -94,7 +94,7 @@ describe('HomePage', () => {
     await user.clear(input)
     await user.type(input, 'pasta')
     await user.keyboard('{Enter}')
-    expect(window.localStorage.getItem('lastQuery')).toBe('pasta')
+    expect(window.localStorage.getItem('lastQuery')).toBe('"pasta"')
   })
 
   it('trims search query before saving to localStorage', async () => {
@@ -103,8 +103,8 @@ describe('HomePage', () => {
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.type(input, '  Salad  ')
     await user.keyboard('{Enter}')
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', 'Salad')
-    expect(window.localStorage.getItem('lastQuery')).toBe('Salad')
+    expect(window.localStorage.setItem).toHaveBeenCalledWith('lastQuery', '"Salad"')
+    expect(window.localStorage.getItem('lastQuery')).toBe('"Salad"')
   })
 
   it('shows pagination when total items exceed page size', async () => {

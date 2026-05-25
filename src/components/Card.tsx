@@ -1,4 +1,5 @@
 import type { Recipe } from "../types";
+import { useSelectedStore } from "../store/useSelectedStore";
 
 interface Props {
   data: Recipe;
@@ -9,7 +10,16 @@ export function Card(props: Props) {
   const { data, onSelect } = props;
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
+    if (e.target instanceof HTMLInputElement) return;
     onSelect?.(data.id);
+  }
+
+  const { selectedRecipes, toggleIds } = useSelectedStore();
+  const isSelected = selectedRecipes.has(data);
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    toggleIds(data);
   }
 
   return (
@@ -34,6 +44,9 @@ export function Card(props: Props) {
 
         <div className="rating">
           ⭐ {data.rating} <span>({data.reviewCount} reviews)</span>
+        </div>
+        <div className="checkbox">
+          <input type="checkbox" checked={isSelected} onChange={handleCheckboxChange} />
         </div>
       </div>
     </div>

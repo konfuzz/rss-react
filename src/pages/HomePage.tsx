@@ -3,11 +3,13 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { SearchSection } from "../components/SearchSection";
 import { ResultSection } from "../components/ResultSection";
 import { Pagination } from "../components/Pagination";
-import type { RecipesResponse, Recipe } from "../types";
+import type { Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
 import { useSearchParams, Outlet } from "react-router";
+import { Flyout } from "../components/Flyout";
+import { useSelectedStore } from "../store/useSelectedStore";
+import { fetchRecipes } from "../api/recipes";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
 const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
 
 interface AppState {
@@ -34,35 +36,18 @@ export default function HomePage() {
   const rawPage = searchParams.get("page");
   const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
 
+  const { selectedRecipes } = useSelectedStore();
+
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async (query: string = "", page: number = 1) => {
       setState((prev) => ({ ...prev, loading: true, error: null, total: 0 }));
 
-      let url: URL;
-
-      if (query) {
-        url = new URL(API_URL + "/search");
-        url.searchParams.set("q", query);
-      } else {
-        url = new URL(API_URL);
-      }
-
-      url.searchParams.set("delay", "1000");
-      url.searchParams.set("limit", ITEMS_PER_PAGE.toString());
-      url.searchParams.set("skip", ((page - 1) * ITEMS_PER_PAGE).toString());
-
       try {
-        const data = await fetch(url, { signal: controller.signal });
+        const data = await fetchRecipes({ query, page, limit: ITEMS_PER_PAGE }, controller.signal);
 
-        if (!data.ok) {
-          throw new Error(`Server error: ${data.status}`);
-        }
-
-        const json: RecipesResponse = await data.json();
-
-        const {recipes, total} = json;
+        const {recipes, total} = data;
         if (!controller.signal.aborted) {
           setState((prev) => ({ ...prev, recipes, loading: false, total: total }));
         }
@@ -108,25 +93,28 @@ export default function HomePage() {
   };
 
   return (
-    <div className={hasDetails ? "container container--split" : "container"}>
-      <div className="left-panel">
-        <SearchSection searchHandler={handleSearch} query={query} />
-        <ResultSection
-          items={state.recipes}
-          loading={state.loading}
-          error={state.error}
-          onSelect={handleSelectRecipe}
-        />
-        {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
-          <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
-        )}
-        <TestErrorButton />
-      </div>
-      {hasDetails && (
-        <div className="right-panel">
-          <Outlet context={{ onClose: handleClosePanel }} />
+    <>
+      <div className={hasDetails ? "container container--split" : "container"}>
+        <div className="left-panel">
+          <SearchSection searchHandler={handleSearch} query={query} />
+          <ResultSection
+            items={state.recipes}
+            loading={state.loading}
+            error={state.error}
+            onSelect={handleSelectRecipe}
+          />
+          {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
+            <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+          )}
+          <TestErrorButton />
         </div>
-      )}
-    </div>
+        {hasDetails && (
+          <div className="right-panel">
+            <Outlet context={{ onClose: handleClosePanel }} />
+          </div>
+        )}
+      </div>
+      {selectedRecipes.size > 0 && <Flyout />}
+    </>
   );
 }

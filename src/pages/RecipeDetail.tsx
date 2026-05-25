@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useOutletContext } from "react-router";
 import type { Recipe } from "../types";
-const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
+import { fetchRecipeById } from "../api/recipes";
 
 export default function RecipeDetail() {
   const [searchParams] = useSearchParams();
@@ -16,14 +16,12 @@ export default function RecipeDetail() {
     const fetchRecipe = async () => {
       setLoading(true);
       setError(null);
-      const url = new URL(`${API_URL}/${detailsId}`);
-      url.searchParams.set("delay", "1000");
+
+      if (!detailsId) return;
+
       try {
-        const res = await fetch(url, { signal: controller.signal });
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
-        const data: Recipe = await res.json();
+        const data = await fetchRecipeById(detailsId, controller.signal);
+
         if (!controller.signal.aborted) {
           setRecipe(data);
           setLoading(false);

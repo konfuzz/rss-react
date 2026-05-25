@@ -17,6 +17,17 @@
   --shadow: 0 4px 12px rgba(60, 40, 20, 0.08);
 }
 
+html[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --card-bg: #2a2a2a;
+  --primary: #a16207;
+  --primary-hover: #854d0e;
+  --text: #fffaf3;
+  --text-light: #7c6a58;
+  --border: #e8dccb;
+  --tag-bg: #f1e4d1;
+}
+
 /* base */
 body {
   margin: 0;
@@ -64,6 +75,9 @@ button {
   cursor: pointer;
   transition: 0.2s;
   font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none;
 }
 
 button:hover {
@@ -142,6 +156,7 @@ button:hover {
   justify-content: space-between;
   flex: 1;
   gap: 8px;
+  position: relative;
 }
 
 /* HEADER */
@@ -201,6 +216,18 @@ button:hover {
 .rating span {
   color: var(--text-light);
   font-size: 12px;
+}
+
+/* CHECKBOX */
+.checkbox {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+.checkbox input {
+  accent-color: var(--primary);
+  width: 20px;
+  height: 20px;
 }
 
 /* ERROR */
@@ -377,6 +404,10 @@ button:hover {
   display: flex;
   gap: 18px;
 }
+.container--split {
+  position: relative;
+  align-items: flex-start;
+}
 .container .left-panel {
   width: 100%;
   transition: width 0.5s;
@@ -389,6 +420,8 @@ button:hover {
 .right-panel {
   width: 40%;
   min-width: 280px;
+  position: sticky;
+  top: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -490,4 +523,20 @@ button:hover {
   margin: 10px 0 0;
   font-size: 13px;
   color: var(--text-light);
+}
+
+/* FLYOUT */
+.flyout {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
