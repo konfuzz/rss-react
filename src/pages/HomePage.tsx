@@ -3,15 +3,14 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { SearchSection } from "../components/SearchSection";
 import { ResultSection } from "../components/ResultSection";
 import { Pagination } from "../components/Pagination";
-import type { RecipesResponse, Recipe } from "../types";
+import type { Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
 import { useSearchParams, Outlet } from "react-router";
 import { Flyout } from "../components/Flyout";
 import { useSelectedStore } from "../store/useSelectedStore";
+import { fetchRecipes } from "../api/recipes";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/recipes";
 const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
-const FETCH_DELAY = import.meta.env.VITE_FETCH_DELAY || 1000;
 
 interface AppState {
   recipes: Recipe[];
@@ -45,29 +44,10 @@ export default function HomePage() {
     const fetchData = async (query: string = "", page: number = 1) => {
       setState((prev) => ({ ...prev, loading: true, error: null, total: 0 }));
 
-      let url: URL;
-
-      if (query) {
-        url = new URL(API_URL + "/search");
-        url.searchParams.set("q", query);
-      } else {
-        url = new URL(API_URL);
-      }
-
-      url.searchParams.set("delay", FETCH_DELAY.toString());
-      url.searchParams.set("limit", ITEMS_PER_PAGE.toString());
-      url.searchParams.set("skip", ((page - 1) * ITEMS_PER_PAGE).toString());
-
       try {
-        const data = await fetch(url, { signal: controller.signal });
+        const data = await fetchRecipes({ query, page, limit: ITEMS_PER_PAGE }, controller.signal);
 
-        if (!data.ok) {
-          throw new Error(`Server error: ${data.status}`);
-        }
-
-        const json: RecipesResponse = await data.json();
-
-        const {recipes, total} = json;
+        const {recipes, total} = data;
         if (!controller.signal.aborted) {
           setState((prev) => ({ ...prev, recipes, loading: false, total: total }));
         }
