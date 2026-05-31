@@ -5,7 +5,7 @@ import { Flyout } from '../Flyout'
 import { mockRecipe } from '../../test-utils/mocks.ts'
 
 beforeEach(() => {
-  useSelectedStore.setState({ selectedRecipes: new Set() })
+  useSelectedStore.setState({ selectedRecipes: new Map() })
   vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:url')
   vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { })
 })
@@ -15,21 +15,21 @@ afterEach(() => {
 })
 
 it('displays correct count when recipes are selected', () => {
-  useSelectedStore.setState({ selectedRecipes: new Set([mockRecipe, {...mockRecipe}, {...mockRecipe}]) })
+  useSelectedStore.setState({ selectedRecipes: new Map([[mockRecipe.id, mockRecipe], [mockRecipe.id+1, mockRecipe], [mockRecipe.id+2, mockRecipe]]) })
   render(<Flyout />)
   expect(screen.getByText('3 selected')).toBeInTheDocument()
 })
 
 it('"Unselect All" clears the store', async () => {
   const user = userEvent.setup()
-  useSelectedStore.setState({ selectedRecipes: new Set([mockRecipe]) })
+  useSelectedStore.setState({ selectedRecipes: new Map([[mockRecipe.id, mockRecipe]]) })
   render(<Flyout />)
   await user.click(screen.getByText('Unselect All'))
   expect(useSelectedStore.getState().selectedRecipes.size).toBe(0)
 })
 
 it('"Download" calls URL.createObjectURL with a Blob', async () => {
-  useSelectedStore.setState({ selectedRecipes: new Set([mockRecipe]) })
+  useSelectedStore.setState({ selectedRecipes: new Map([[mockRecipe.id, mockRecipe]]) })
   render(<Flyout />)
   await userEvent.click(screen.getByText('Download'))
   expect(globalThis.URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob))

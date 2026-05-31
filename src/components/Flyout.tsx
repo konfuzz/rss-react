@@ -5,7 +5,7 @@ export function Flyout() {
 
   const { selectedRecipes, unselectAll } = useSelectedStore();
   const handleDownload = () => {
-    const csv = generateCSV(Array.from(selectedRecipes));
+    const csv = generateCSV(Array.from(selectedRecipes.values()));
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
