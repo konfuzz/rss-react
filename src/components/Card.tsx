@@ -15,7 +15,7 @@ export function Card(props: Props) {
   }
 
   const { selectedRecipes, toggleIds } = useSelectedStore();
-  const isSelected = selectedRecipes.has(data);
+  const isSelected = selectedRecipes.has(data.id);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();

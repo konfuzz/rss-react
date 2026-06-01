@@ -2,7 +2,7 @@ import { useSelectedStore } from '../useSelectedStore'
 import { mockRecipe } from '../../test-utils/mocks'
 
 beforeEach(() => {
-  useSelectedStore.setState({ selectedRecipes: new Set() })
+  useSelectedStore.setState({ selectedRecipes: new Map() })
 })
 
 it('starts empty', () => {

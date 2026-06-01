@@ -1,43 +1,14 @@
-import { useState, useEffect } from "react";
 import { useSearchParams, useOutletContext } from "react-router";
-import type { Recipe } from "../types";
-import { fetchRecipeById } from "../api/recipes";
+import { useRecipeDetailQuery } from "../hooks/useRecipeDetailQuery";
 
 export default function RecipeDetail() {
   const [searchParams] = useSearchParams();
   const { onClose } = useOutletContext<{ onClose: () => void }>();
   const detailsId = searchParams.get('details');
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchRecipe = async () => {
-      setLoading(true);
-      setError(null);
+  const { data: recipe, isPending, error } = useRecipeDetailQuery(detailsId);
 
-      if (!detailsId) return;
-
-      try {
-        const data = await fetchRecipeById(detailsId, controller.signal);
-
-        if (!controller.signal.aborted) {
-          setRecipe(data);
-          setLoading(false);
-        }
-      } catch {
-        if (!controller.signal.aborted) {
-          setError("Failed to load recipe details.");
-          setLoading(false);
-        }
-      }
-    };
-    fetchRecipe();
-    return () => controller.abort();
-  }, [detailsId]);
-
-  if (loading) {
+  if (isPending) {
     return (
       <div className="detail-panel">
         <button className="detail-close" onClick={onClose}>✕</button>
@@ -52,7 +23,7 @@ export default function RecipeDetail() {
     return (
       <div className="detail-panel">
         <button className="detail-close" onClick={onClose}>✕</button>
-        <p className="error-message">{error || "Recipe not found."}</p>
+        <p className="error-message">{error ? "Failed to load recipe details." : "Recipe not found."}</p>
       </div>
     );
   }
