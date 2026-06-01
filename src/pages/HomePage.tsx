@@ -1,33 +1,16 @@
-import { useState, useEffect } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { SearchSection } from "../components/SearchSection";
 import { ResultSection } from "../components/ResultSection";
 import { Pagination } from "../components/Pagination";
-import type { Recipe } from "../types";
 import { TestErrorButton } from "../components/TestErrorButton";
 import { useSearchParams, Outlet } from "react-router";
 import { Flyout } from "../components/Flyout";
 import { useSelectedStore } from "../store/useSelectedStore";
-import { fetchRecipes } from "../api/recipes";
+import { useRecipesQuery } from "../hooks/useRecipesQuery";
 
 const ITEMS_PER_PAGE = import.meta.env.VITE_ITEMS_PER_PAGE || 10;
 
-interface AppState {
-  recipes: Recipe[];
-  loading: boolean;
-  error: string | null;
-  total: number;
-}
-
-export default function HomePage() {
-
-  const [state, setState] = useState<AppState>({
-    recipes: [],
-    loading: true,
-    error: null,
-    total: 0,
-  });
-  
+export default function HomePage() { 
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useLocalStorage("lastQuery", "");
   
@@ -36,38 +19,8 @@ export default function HomePage() {
   const rawPage = searchParams.get("page");
   const page = rawPage ? Math.max(1, parseInt(rawPage, 10) || 1) : 1;
 
+  const { data, isPending, error } = useRecipesQuery(query, page);
   const { selectedRecipes } = useSelectedStore();
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchData = async (query: string = "", page: number = 1) => {
-      setState((prev) => ({ ...prev, loading: true, error: null, total: 0 }));
-
-      try {
-        const data = await fetchRecipes({ query, page, limit: ITEMS_PER_PAGE }, controller.signal);
-
-        const {recipes, total} = data;
-        if (!controller.signal.aborted) {
-          setState((prev) => ({ ...prev, recipes, loading: false, total: total }));
-        }
-      } catch {
-        if (!controller.signal.aborted) {
-          setState((prev) => ({
-            ...prev,
-            error: "Failed to load recipes. Please try again later.",
-            loading: false,
-            recipes: [],
-            total: 0,
-          }));
-        }
-      }
-    };
-
-    fetchData(query, page);
-
-    return () => controller.abort();
-  }, [query, page]);
 
   const handleSearch = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -92,19 +45,21 @@ export default function HomePage() {
     setSearchParams((prev) => { prev.delete('details'); return prev; });
   };
 
+  const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
+
   return (
     <>
       <div className={hasDetails ? "container container--split" : "container"}>
         <div className="left-panel">
           <SearchSection searchHandler={handleSearch} query={query} />
           <ResultSection
-            items={state.recipes}
-            loading={state.loading}
-            error={state.error}
+            items={data?.recipes ?? []}
+            loading={isPending}
+            error={error ? "Failed to load recipes. Please try again later." : null}
             onSelect={handleSelectRecipe}
           />
-          {Math.ceil(state.total / ITEMS_PER_PAGE) > 1 && !state.loading && !state.error && (
-            <Pagination currentPage={page} totalPages={Math.ceil(state.total / ITEMS_PER_PAGE)} onPageChange={handlePageChange} />
+          {totalPages > 1 && !isPending && !error && (
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
           )}
           <TestErrorButton />
         </div>
