@@ -20,7 +20,7 @@ interface AppState {
 }
 
 export default function HomePage() {
-  
+
   const [state, setState] = useState<AppState>({
     recipes: [],
     loading: true,
