@@ -4,6 +4,13 @@ import userEvent from '@testing-library/user-event'
 import { mockRecipe, mockRecipesResponse } from '../../test-utils/mocks.ts'
 import { MemoryRouter, Routes, Route, useOutletContext } from 'react-router'
 import type { FC } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+}
 
 const TestCloseButton: FC = () => {
   const { onClose } = useOutletContext<{ onClose: () => void }>()
@@ -43,13 +50,22 @@ afterEach(() => {
 
 describe('HomePage', () => {
   it('renders the search and results section', () => {
-    const { container } = render(<MemoryRouter><HomePage /></MemoryRouter>)
+    const { container } = render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(screen.getByPlaceholderText('Search recipes...')).toBeInTheDocument()
     expect(container.querySelector('.results')).toBeInTheDocument()
   })
 
   it('displays recipes after successful fetch', async () => {
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+
+    )
     expect(await screen.findByText(mockRecipesResponse.recipes[0].name)).toBeInTheDocument()
   })
 
@@ -57,13 +73,21 @@ describe('HomePage', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       createMockFetch(false)
     )
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(await screen.findByText(/Failed to load recipes/)).toBeInTheDocument()
   })
 
   it('saves search query to localStorage', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.type(input, 'Pizza')
     await user.keyboard('{Enter}')
@@ -72,14 +96,22 @@ describe('HomePage', () => {
 
   it('reads lastQuery from localStorage on mount', async () => {
     window.localStorage.setItem('lastQuery', '"pasta"')
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(window.localStorage.getItem).toHaveBeenCalledWith('lastQuery')
     expect(window.localStorage.getItem('lastQuery')).toBe('"pasta"')
   })
 
   it('handles empty search query', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.clear(input)
     await user.keyboard('{Enter}')
@@ -89,7 +121,11 @@ describe('HomePage', () => {
   it('handles query change on input', async () => {
     window.localStorage.setItem('lastQuery', 'chicken')
     const user = userEvent.setup()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.clear(input)
     await user.type(input, 'pasta')
@@ -99,7 +135,11 @@ describe('HomePage', () => {
 
   it('trims search query before saving to localStorage', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.type(input, '  Salad  ')
     await user.keyboard('{Enter}')
@@ -121,7 +161,11 @@ describe('HomePage', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       createMockFetch(true, manyRecipes)
     )
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(await screen.findByText('1')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
   })
@@ -142,7 +186,11 @@ describe('HomePage', () => {
       createMockFetch(true, manyRecipes)
     )
     fetchSpy.mockClear()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(await screen.findByText('1')).toBeInTheDocument()
     fetchSpy.mockClear()
     await user.click(screen.getByText('2'))
@@ -160,7 +208,11 @@ describe('HomePage', () => {
 
   it('opens recipe detail panel when clicking a card', async () => {
     const user = userEvent.setup()
-    const { container } = render(<MemoryRouter><HomePage /></MemoryRouter>)
+    const { container } = render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     expect(await screen.findByText(mockRecipe.name)).toBeInTheDocument()
     const card = container.querySelector('.card') as HTMLElement
     await user.click(card)
@@ -170,9 +222,11 @@ describe('HomePage', () => {
 
   it('renders split layout when details param is set', () => {
     const { container } = render(
-      <MemoryRouter initialEntries={['/?details=1']}>
-        <HomePage />
-      </MemoryRouter>
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter initialEntries={['/?details=1']}>
+          <HomePage />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
     expect(container.querySelector('.container--split')).toBeInTheDocument()
     expect(container.querySelector('.right-panel')).toBeInTheDocument()
@@ -181,16 +235,18 @@ describe('HomePage', () => {
   it('closes detail panel via outlet context', async () => {
     const user = userEvent.setup()
     const { container } = render(
-      <MemoryRouter initialEntries={['/?details=1']}>
-        <Routes>
-          <Route element={<HomePage />}>
-            <Route
-              path="/"
-              element={<TestCloseButton />}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter initialEntries={['/?details=1']}>
+          <Routes>
+            <Route element={<HomePage />}>
+              <Route
+                path="/"
+                element={<TestCloseButton />}
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
     expect(container.querySelector('.container--split')).toBeInTheDocument()
     expect(container.querySelector('.right-panel')).toBeInTheDocument()
@@ -201,7 +257,11 @@ describe('HomePage', () => {
 
   it('calls search API on form submit', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter><HomePage /></MemoryRouter>)
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <MemoryRouter><HomePage /></MemoryRouter>
+      </QueryClientProvider>
+    )
     const input = screen.getByPlaceholderText('Search recipes...')
     await user.clear(input)
     await user.type(input, 'chicken')
@@ -211,6 +271,53 @@ describe('HomePage', () => {
     await user.click(screen.getByRole('button', { name: /Search/i }))
     const calledUrl = fetchSpy.mock.calls[fetchSpy.mock.calls.length - 1][0]
     expect(calledUrl.toString()).toContain('/search?q=chicken');
+  })
+
+  it('caches recipe list between page navigations', async () => {
+    const manyRecipes = {
+      recipes: Array.from({ length: 20 }, (_, i) => ({
+        ...mockRecipe,
+        id: i + 1,
+        name: `Recipe ${i + 1}`,
+      })),
+      total: 20,
+      skip: 0,
+      limit: 10,
+    }
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false, staleTime: 5 * 60 * 1000 },
+      },
+    })
+
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(createMockFetch(true, manyRecipes))
+
+    const user = userEvent.setup()
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+    expect(await screen.findByText('Recipe 1')).toBeInTheDocument()
+    const page1Calls = fetchSpy.mock.calls.length
+    expect(page1Calls).toBeGreaterThan(0)
+
+    await user.click(screen.getByText('2'))
+    expect(await screen.findByText('Recipe 11')).toBeInTheDocument()
+    const page2Calls = fetchSpy.mock.calls.length
+    expect(page2Calls).toBeGreaterThan(page1Calls)
+
+    fetchSpy.mockClear()
+    await user.click(screen.getByText('1'))
+    expect(await screen.findByText('Recipe 1')).toBeInTheDocument()
+    expect(fetchSpy.mock.calls.length).toBe(0)
   })
 
 })

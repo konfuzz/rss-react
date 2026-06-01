@@ -3,6 +3,13 @@ import { MemoryRouter } from 'react-router'
 import App from './App'
 import userEvent from '@testing-library/user-event'
 import { mockRecipesResponse } from './test-utils/mocks'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+}
 
 const createMockFetch = (ok: boolean, data?: unknown) =>
   vi.fn().mockResolvedValue({
@@ -24,9 +31,11 @@ afterEach(() => {
 
 const renderAt = (path: string) =>
   render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>
+    <QueryClientProvider client={createTestQueryClient()}>
+      <MemoryRouter initialEntries={[path]}>
+        <App />
+      </MemoryRouter>
+    </QueryClientProvider>
   )
 
 describe('App routing', () => {
