@@ -291,6 +291,11 @@ button:hover {
   color: var(--primary);
 }
 
+.header .menu-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 /* ABOUT PAGE */
 .about {
   background: var(--card-bg);
