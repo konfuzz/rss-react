@@ -1,10 +1,9 @@
 import './App.css'
+import Homepage from './pages/Homepage'
 
 function App() {
   return (
-    <>
-      <h1>RSS React</h1>
-    </>
+    <Homepage />
   )
 }
 
