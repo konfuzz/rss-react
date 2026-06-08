@@ -13,7 +13,7 @@ export default function ReactHookForm({ onClose }: { onClose: () => void }) {
 
   const { addSubmission, countries } = useFormStore();
 
-  const { register, handleSubmit, setValue, reset, trigger, formState: { errors, isValid } } = useForm({resolver: zodResolver(formSchema), mode: 'onChange'});
+  const { register, handleSubmit, reset, trigger, formState: { errors, isValid } } = useForm({resolver: zodResolver(formSchema), mode: 'onChange'});
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     addSubmission({...data, id: crypto.randomUUID(), image: image ?? ''});
@@ -23,6 +23,7 @@ export default function ReactHookForm({ onClose }: { onClose: () => void }) {
     setStrength(null);
   };
   
+  const { onChange, ...imageRegister } = register("image");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,9 +64,8 @@ export default function ReactHookForm({ onClose }: { onClose: () => void }) {
       </div>
       <div className="field">
         <label htmlFor="image">Upload Image</label>
-        <input type="file" id="image" name="image" accept="image/png, image/jpeg" onChange={(e) => {
-          const file = e.target.files?.[0];
-          setValue('image', file ?? undefined, { shouldValidate: true });
+        <input {...imageRegister} type="file" id="image" name="image" accept="image/png, image/jpeg" onChange={(e) => {
+          onChange(e);
           handleImageChange(e, setImage);
         }} />
         {errors.image?.message && <span className="error">{errors.image.message}</span>}

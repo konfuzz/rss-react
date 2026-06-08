@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import countries from './countries';
 
+const getFile = (value: FileList | File | string | undefined) => {
+  if (value instanceof FileList) return value[0] ?? null;
+  if (value instanceof File) return value.size > 0 ? value : null;
+  return null;
+};
+
 export const formSchema = z.object({
   name: z.string().min(3, 'Name is required').refine(
     (val) => val[0] === val[0]?.toUpperCase(),
@@ -18,7 +24,17 @@ export const formSchema = z.object({
     (val) => val,
     'You must accept terms'
   ),
-  image: z.file().max(1_000_000, 'Filesize should be less than 1Mb').mime(["image/png", "image/jpeg"], "Invalid file type").optional(),
+  image: z
+    .union([z.instanceof(FileList), z.instanceof(File), z.string()])
+    .optional()
+    .refine((v) => {
+      const file = getFile(v);
+      return !file || file.size <= 1_000_000;
+    }, "Max file size is 1Mb")
+    .refine((v) => {
+      const file = getFile(v);
+      return !file || ["image/jpeg", "image/png"].includes(file.type);
+    }, "Invalid file type"),
   password: z.string().min(1, 'Password is required'),
   confirm: z.string().min(1, 'Confirm password'),
   country: z.string().refine((val) => countries.includes(val), 'Invalid country'),
