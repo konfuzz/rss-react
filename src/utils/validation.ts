@@ -14,11 +14,11 @@ export const formSchema = z.object({
       && parts[1].includes('.');
   }, 'Invalid email'),
   gender: z.string().refine((val) => val, 'Select gender'),
-  terms: z.union([z.boolean(), z.literal('on'), z.undefined()]).refine(
+  terms: z.union([z.boolean(), z.literal('on'), z.undefined()]).transform((val) => val === true || val === 'on').refine(
     (val) => val,
     'You must accept terms'
   ),
-  image: z.file().refine((val) => (val.size <= 1024 * 1024 && (val.type === 'image/png' || val.type === 'image/jpeg')), 'Image must be less than 1024x1024 and be a png or jpeg'),
+  image: z.file().max(1_000_000, 'Filesize should be less than 1Mb').mime(["image/png", "image/jpeg"], "Invalid file type").optional(),
   password: z.string().min(1, 'Password is required'),
   confirm: z.string().min(1, 'Confirm password'),
   country: z.string().refine((val) => countries.includes(val), 'Invalid country'),

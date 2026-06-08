@@ -11,9 +11,7 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(Object.fromEntries(new FormData(e.currentTarget)));
     const data = formSchema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    console.log(data);
 
     if (!data.success) {
       const fieldErrors: Record<string, string> = {};
@@ -30,7 +28,7 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       age: data.data.age,
       email: data.data.email,
       gender: data.data.gender,
-      terms: 'terms' in data.data,
+      terms: data.data.terms,
       image: image ?? '',
       password: data.data.password,
       confirm: data.data.confirm,
