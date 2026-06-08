@@ -19,6 +19,7 @@ export default function ReactHookForm({ onClose }: { onClose: () => void }) {
     onClose();
     reset();
     setImage(null);
+    setStrength(null);
   };
   
 

@@ -38,6 +38,8 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
     onClose();
     e.currentTarget.reset();
     setImage(null);
+    setStrength(null);
+    setErrors({});
   };
 
   return (
