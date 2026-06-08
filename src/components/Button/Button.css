@@ -17,3 +17,8 @@ button:hover {
 form button[type="submit"] {
   margin-top: 0.5rem;
 }
+
+button[disabled] {
+  background-color: #949bb8;
+  cursor: not-allowed;
+}
