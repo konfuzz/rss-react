@@ -1,49 +1,11 @@
 import { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { handleImageChange, handlePasswordStrength } from '../../utils/utils';
 
 export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
   const { addSubmission, countries } = useFormStore();
   const [image, setImage] = useState<string | null>(null);
   const [strength, setStrength] = useState<string | null>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.currentTarget.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setImage(reader.result as string);
-    };
-  };
-
-  const handlePasswordStrength = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const password = e.currentTarget.value;
-    const checks = {
-      number: /\d/.test(password),
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
-    };
-
-    const score = Object.values(checks).filter(Boolean).length;
-
-    switch (score) {
-      case 0:
-      case 1:
-        setStrength('weak');
-        break;
-      case 2:
-        setStrength('simple');
-        break;
-      case 3:
-        setStrength('medium');
-        break;
-      default:
-        setStrength('strong');
-        break;
-    }
-
-  };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,8 +17,8 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       age: Number(data.age),
       email: data.email as string,
       gender: data.gender as string,
-      terms: 'terms' in data ? data.terms === "On" : false,
-      image: image ?? 'https://placehold.co/200x200/png',
+      terms: 'terms' in data,
+      image: image ?? '',
       password: data.password as string,
       confirm: data.confirm as string,
       country: data.country as string,
@@ -101,11 +63,11 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       </div>
       <div className="field">
         <label htmlFor="image">Upload Image</label>
-        <input type="file" id="image" name="image" accept="image/png, image/jpeg" onChange={handleImageChange} />
+        <input type="file" id="image" name="image" accept="image/png, image/jpeg" onChange={(e) => handleImageChange(e, setImage)} />
       </div>
       <div className="field">
         <label htmlFor="password">Password</label>
-        <input type="password" id="password" name="password" onChange={handlePasswordStrength} />
+        <input type="password" id="password" name="password" onChange={(e) => handlePasswordStrength(e, setStrength)} />
         <div className="strength">{strength}</div>
       </div>
       <div className="field">
