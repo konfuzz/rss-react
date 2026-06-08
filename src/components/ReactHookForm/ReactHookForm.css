@@ -1,0 +1,9 @@
+form {
+  min-width: 300px;
+}
+
+form h2 {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-size: 1.125rem;
+}
