@@ -1,7 +1,19 @@
+import { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
 
 export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
   const { addSubmission } = useFormStore();
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setImage(reader.result as string);
+    };
+  };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -14,7 +26,7 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       email: data.email as string,
       gender: data.gender as string,
       terms: 'terms' in data ? data.terms === "On" : false,
-      image: 'https://placehold.co/200x200/png',
+      image: image ?? 'https://placehold.co/200x200/png',
       password: '123456',
       country: 'USA',
     })
@@ -45,6 +57,22 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
+      </div>
+      <div className="field">
+        <label htmlFor="country">Country</label>
+        <input type="text" id="country" name="country" />
+      </div>
+      <div className="field">
+        <label htmlFor="image">Upload Image</label>
+        <input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} />
+      </div>
+      <div className="field">
+        <label htmlFor="password">Password</label>
+        <input type="password" id="password" name="password" />
+      </div>
+      <div className="field">
+        <label htmlFor="confirm">Country</label>
+        <input type="password" id="confirm" name="confirm" />
       </div>
       <div className="field">
         <label htmlFor="terms">Terms and Conditions</label>
