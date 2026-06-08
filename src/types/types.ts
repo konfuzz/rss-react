@@ -7,6 +7,7 @@ export interface FormSubmission {
   terms: boolean;
   image: string;
   password: string;
+  confirm: string;
   country: string;
 }
 
