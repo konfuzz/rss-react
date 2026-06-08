@@ -1,36 +1,27 @@
-import { useRef, useEffect } from 'react';
+import { forwardRef } from 'react';
+import { createPortal } from 'react-dom';
 import './modal.css';
 
-export default function Modal({ isOpen, onClose, children }: {
-  isOpen: boolean;
-  onClose: () => void;
-  children?: React.ReactNode;
-}) {
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+interface ModalProps {
+  onClose: () => void,
+  children?: React.ReactNode
+}
 
-  useEffect(() => {
-    if (isOpen) {
-      dialogRef.current?.showModal();
-    } else {
-      dialogRef.current?.close();
-    }
-  }, [isOpen]);
+const Modal = forwardRef<HTMLDialogElement, ModalProps>(({ onClose, children }, ref) => {
 
-  const handleCancel = (e: React.SyntheticEvent<HTMLDialogElement>) => {
-    e.preventDefault();
-    onClose();
+  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === e.currentTarget) onClose();
   };
 
-  return (
-    <dialog
-      ref={dialogRef}
-      onCancel={handleCancel}
-      onClick={(e) => {
-        if (e.target === dialogRef.current) onClose();
-      }}
-    >
+  return createPortal(
+    <dialog ref={ref} onClose={onClose} onClick={handleClick}>
       {children}
       <button onClick={onClose} className="close-dialog" type="button">✕</button>
-    </dialog>
+    </dialog>,
+    document.body
   );
-}
+});
+
+Modal.displayName = 'Modal';
+
+export default Modal;

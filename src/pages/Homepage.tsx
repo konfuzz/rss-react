@@ -1,25 +1,22 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef } from 'react';
+
 import Modal from '../components/Modal/Modal';
 import Button from '../components/Button/Button';
 
 export default function Homepage() {
-  const [isOpen, setIsOpen] = useState(false);
-  const handleOpen = () => setIsOpen(true);
-  const handleClose = () => setIsOpen(false);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   return (
     <>
       <h1>RSS React forms</h1>
-      <Button onClick={handleOpen} />
-      {createPortal(
-        <Modal isOpen={isOpen} onClose={handleClose}>
-          <div className="modal-container">
-            <h2>Modal</h2>
-          </div>
-        </Modal>,
-        document.body
-      )}      
+      <Button onClick={() => dialogRef.current?.showModal()}>
+        Open Modal
+      </Button>
+      <Modal ref={dialogRef} onClose={() => dialogRef.current?.close()}>
+        <div className="modal-container">
+          <h2>Modal</h2>
+        </div>
+      </Modal>  
     </>
   );
 }

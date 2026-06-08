@@ -8,9 +8,14 @@ import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist", "coverage"]),
   {
     files: ["**/*.{ts,tsx}"],
+    settings: {
+      react: {
+        version: "detect"
+      }
+    },
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,

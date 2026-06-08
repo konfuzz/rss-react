@@ -11,6 +11,7 @@ dialog {
 }
 .modal-container {
   padding: 2rem 4rem;
+  position: relative;
 }
 
 .close-dialog {
