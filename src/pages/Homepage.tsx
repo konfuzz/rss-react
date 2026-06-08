@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import Modal from '../components/Modal/Modal';
 import Button from '../components/Button/Button';
 import SubmissionsList from '../components/SubmissionsList/SubmissionsList';
+import UncontrolledForm from '../components/UncontrolledForm/UncontrolledForm';
 
 export default function Homepage() {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
@@ -16,7 +17,7 @@ export default function Homepage() {
       </Button>
       <Modal ref={dialogRef} onClose={() => dialogRef.current?.close()}>
         <div className="modal-container">
-          <h2>Modal</h2>
+          <UncontrolledForm onClose={() => dialogRef.current?.close()} />
         </div>
       </Modal>  
     </main>
