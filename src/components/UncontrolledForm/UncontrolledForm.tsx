@@ -13,7 +13,7 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       age: Number(data.age),
       email: data.email as string,
       gender: data.gender as string,
-      terms: data.terms === "On" ? true : false,
+      terms: 'terms' in data ? data.terms === "On" : false,
       image: 'https://placehold.co/200x200/png',
       password: '123456',
       country: 'USA',
@@ -41,13 +41,14 @@ export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
       <div className="field">
         <label htmlFor="gender">Gender</label>
         <select id="gender" name="gender">
+          <option>Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
       </div>
       <div className="field">
-      <label htmlFor="terms">Terms and Conditions</label>
-      <input type="checkbox" id="terms" name="terms" />
+        <label htmlFor="terms">Terms and Conditions</label>
+        <input type="checkbox" id="terms" name="terms" />
       </div>
       <button type="submit">Submit</button>
     </form>
