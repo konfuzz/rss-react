@@ -3,6 +3,7 @@ dialog {
   outline: none;
   border: none;
   border-radius: 0.5rem;
+  position: relative;
 
   &::backdrop {
     background-color: rgba(0, 0, 0, 0.2);
@@ -11,7 +12,6 @@ dialog {
 }
 .modal-container {
   padding: 2rem 4rem;
-  position: relative;
 }
 
 .close-dialog {
