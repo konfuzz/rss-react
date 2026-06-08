@@ -5,6 +5,7 @@ import { handleImageChange, handlePasswordStrength } from '../../utils/utils';
 import { formSchema } from '../../utils/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import './ReactHookForm.css';
 
 export default function ReactHookForm({ onClose }: { onClose: () => void }) {
   const [image, setImage] = useState<string | null>(null);

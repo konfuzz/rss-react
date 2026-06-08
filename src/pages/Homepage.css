@@ -1,0 +1,15 @@
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+main > h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+main > button {
+  margin-right: 0.75rem;
+  margin-bottom: 0.5rem;
+}

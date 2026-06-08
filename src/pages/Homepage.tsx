@@ -5,6 +5,7 @@ import Button from '../components/Button/Button';
 import SubmissionsList from '../components/SubmissionsList/SubmissionsList';
 import UncontrolledForm from '../components/UncontrolledForm/UncontrolledForm';
 import ReactHookForm from '../components/ReactHookForm/ReactHookForm';
+import './Homepage.css';
 
 export default function Homepage() {
   const dialogRef = useRef<HTMLDialogElement | null>(null);

@@ -1,0 +1,47 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #222;
+  background: #f4f4f9;
+  min-height: 100vh;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.error {
+  display: block;
+  color: #d32f2f;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  min-height: 1em;
+}
+
+.strength {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #555;
+  text-transform: capitalize;
+}

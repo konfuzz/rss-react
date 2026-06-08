@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
 import { handleImageChange, handlePasswordStrength } from '../../utils/utils';
 import { formSchema } from '../../utils/validation';
+import './UncontrolledForm.css';
 
 export default function UncontrolledForm({ onClose }: { onClose: () => void }) {
   const { addSubmission, countries } = useFormStore();
