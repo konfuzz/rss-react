@@ -1,6 +1,6 @@
+import { memo, useMemo } from 'react';
 import type { Country } from '../../types';
 import { CountryCard } from '../country-card/country-card';
-import { getPopulationForYear, createYearDataMap } from '../../utils/data-transformers';
 
 import styles from './country-list.module.css';
 
@@ -15,7 +15,7 @@ type CountryListProps = {
   onYearChange: (year: number) => void;
 };
 
-export const CountryList = ({
+export const CountryList = memo(({
   countries,
   searchQuery,
   selectedColumns,
@@ -24,7 +24,13 @@ export const CountryList = ({
   sortField,
   sortOrder,
 }: CountryListProps) => {
-  const filteredCountries = countries
+
+  const currentYearCountries = useMemo(() => countries.map((country) => {
+    const yearData = country.data.filter((d) => d.year === selectedYear);
+    return { ...country, data: yearData };
+  }), [countries, selectedYear]);
+
+  const filteredCountries = useMemo(() => currentYearCountries
     .filter((c) => {
       const matchesSearch = c.id.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRegion = !selectedRegion || c.data.some((d) => d.region === selectedRegion);
@@ -33,18 +39,19 @@ export const CountryList = ({
     .sort((a, b) => {
       if (sortField === 'name') {
         return sortOrder === 'asc' ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
-      } else {
-        const popA = getPopulationForYear(createYearDataMap(a.data), selectedYear) || 0;
-        const popB = getPopulationForYear(createYearDataMap(b.data), selectedYear) || 0;
-        return sortOrder === 'asc' ? popA - popB : popB - popA;
       }
-    });
+
+      const populationA = a.data[0]?.population ?? 0;
+      const populationB = b.data[0]?.population ?? 0;
+
+      return sortOrder === 'asc' ? populationA - populationB : populationB - populationA;
+    }), [currentYearCountries, searchQuery, selectedRegion, sortField, sortOrder]);
 
   return (
     <div className={styles.countryList}>
-      {filteredCountries.map((country, index) => (
+      {filteredCountries.map((country) => (
         <CountryCard
-          key={index}
+          key={country.iso_code ?? country.id}
           country={country}
           selectedYear={selectedYear}
           selectedColumns={selectedColumns}
@@ -52,4 +59,4 @@ export const CountryList = ({
       ))}
     </div>
   );
-};
+});
