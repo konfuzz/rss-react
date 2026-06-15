@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import type { Country } from '../../types';
 import { CountryCard } from '../country-card/country-card';
 
@@ -24,7 +25,6 @@ export const CountryList = memo(({
   sortField,
   sortOrder,
 }: CountryListProps) => {
-
   const currentYearCountries = useMemo(() => countries.map((country) => {
     const yearData = country.data.filter((d) => d.year === selectedYear);
     return { ...country, data: yearData };
@@ -47,16 +47,39 @@ export const CountryList = memo(({
       return sortOrder === 'asc' ? populationA - populationB : populationB - populationA;
     }), [currentYearCountries, searchQuery, selectedRegion, sortField, sortOrder]);
 
+  const virtualizer = useWindowVirtualizer({
+    count: filteredCountries.length,
+    estimateSize: () => 296,
+    overscan: 5,
+  });
+
   return (
     <div className={styles.countryList}>
-      {filteredCountries.map((country) => (
-        <CountryCard
-          key={country.iso_code ?? country.id}
-          country={country}
-          selectedYear={selectedYear}
-          selectedColumns={selectedColumns}
-        />
-      ))}
+      <div
+        className={styles.virtualContainer}
+        style={{ height: `${virtualizer.getTotalSize()}px` }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const country = filteredCountries[virtualRow.index];
+          return (
+            <div
+              key={virtualRow.key}
+              className={styles.virtualItem}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <CountryCard
+                country={country}
+                selectedYear={selectedYear}
+                selectedColumns={selectedColumns}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 });
