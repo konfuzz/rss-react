@@ -1,5 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "https://dummyjson.com/";
-const DELAY = import.meta.env.VITE_FETCH_DELAY || 1000;
+const BASE_URL = process.env.API_URL || "https://dummyjson.com/";
+const DELAY = process.env.FETCH_DELAY || "100";
 
 export async function request<T>(path: string, params?: Record<string, string>, signal?: AbortSignal): Promise<T> {
   const url = new URL(path, BASE_URL);

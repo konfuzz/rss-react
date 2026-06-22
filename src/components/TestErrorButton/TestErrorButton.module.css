@@ -1,0 +1,14 @@
+.test-error-btn {
+  margin: 16px 0;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #e37a7a;
+  color: #fffaf3;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: inherit;
+}
+.test-error-btn:hover {
+  background: #e04c4c;
+}

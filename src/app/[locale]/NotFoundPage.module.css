@@ -1,0 +1,36 @@
+.not-found {
+  text-align: center;
+  padding: 60px var(--padding);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.not-found h1 {
+  margin: 0 0 8px;
+  font-size: 64px;
+  font-weight: normal;
+  color: var(--primary);
+}
+
+.not-found p {
+  margin: 0 0 8px;
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+.button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fffaf3;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: var(--primary-hover);
+}

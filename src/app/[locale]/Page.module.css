@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  gap: 18px;
+}
+.container--split {
+  position: relative;
+  align-items: flex-start;
+}
+.container .left-panel {
+  width: 100%;
+  transition: width 0.5s;
+}
+.container--split .left-panel {
+  width: 60%;
+  min-width: 0;
+}
+
+.right-panel {
+  width: 40%;
+  min-width: 280px;
+  position: sticky;
+  top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .right-panel {
+    width: 80%;
+    height: 100svh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    overflow: scroll;
+  }
+  .container--split .left-panel {
+    width: 100%;
+  }
+}
