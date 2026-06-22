@@ -1,8 +1,9 @@
-import { fetchRecipeById } from "../api/recipes";
+import { fetchRecipeById } from "../../api/recipes";
 import { Link } from "@/i18n/navigation"
 import Image from "next/image";
-import type { Recipe } from "../types";
+import type { Recipe } from "../../types";
 import { getTranslations } from 'next-intl/server'
+import styles from './RecipeDetail.module.css'
 
 interface Props {
   detailsId: string | null
@@ -26,18 +27,18 @@ export async function RecipeDetail({ detailsId, page }: Props) {
     recipe = await fetchRecipeById(detailsId);
   } catch {
     return (
-      <div className="detail-panel">
+      <div className={styles['detail-panel']}>
         <p className="error-message">{t('failedToLoad')}</p>
-        <Link href={url}><button className="detail-close">✕</button></Link>
+        <Link href={url}><button className={styles['detail-close']}>✕</button></Link>
       </div>
     )
   }
 
   return (
-    <div className="detail-panel">
-      <Link href={url}><button className="detail-close">✕</button></Link>
-      <Image className="detail-image" src={recipe.image} alt={recipe.name} width={640} height={400} />
-      <div className="detail-header">
+    <div className={styles['detail-panel']}>
+      <Link href={url}><button className={styles['detail-close']}>✕</button></Link>
+      <Image className={styles['detail-image']} src={recipe.image} alt={recipe.name} width={640} height={400} />
+      <div className={styles['detail-header']}>
         <h2>{recipe.name}</h2>
         <span className="badge">{recipe.difficulty}</span>
       </div>
@@ -46,7 +47,7 @@ export async function RecipeDetail({ detailsId, page }: Props) {
         <span>⏱ {recipe.prepTimeMinutes + recipe.cookTimeMinutes} {t('min')}</span>
         <span>🔥 {recipe.caloriesPerServing} {t('kcal')}</span>
       </div>
-      <div className="detail-section">
+      <div className={styles['detail-section']}>
         <h3>{t('ingredients')}</h3>
         <ul>
           {recipe.ingredients.map((item) => (
@@ -54,7 +55,7 @@ export async function RecipeDetail({ detailsId, page }: Props) {
           ))}
         </ul>
       </div>
-      <div className="detail-section">
+      <div className={styles['detail-section']}>
         <h3>{t('instructions')}</h3>
         <ol>
           {recipe.instructions.map((step, i) => (
@@ -67,7 +68,7 @@ export async function RecipeDetail({ detailsId, page }: Props) {
           <span key={tag}>{tag}</span>
         ))}
       </div>
-      <p className="detail-cuisine">{recipe.cuisine} · {recipe.mealType.join(', ')}</p>
+      <p className={styles['detail-cuisine']}>{recipe.cuisine} · {recipe.mealType.join(', ')}</p>
       <div className="rating">
         ⭐ {recipe.rating} <span>({recipe.reviewCount} {t('reviews')})</span>
       </div>

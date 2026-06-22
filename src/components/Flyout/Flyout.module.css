@@ -1,0 +1,14 @@
+.flyout {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from 'next-intl'
+import styles from './TestErrorButton.module.css'
 
 export function TestErrorButton() {
   const t = useTranslations('TestErrorButton')
@@ -16,7 +17,7 @@ export function TestErrorButton() {
   }
 
   return (
-    <button className="test-error-btn" onClick={handleClick}>
+    <button className={styles['test-error-btn']} onClick={handleClick}>
       🧪 {t('label')}
     </button>
   );

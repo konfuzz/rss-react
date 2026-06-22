@@ -1,0 +1,10 @@
+.checkbox {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+.checkbox input {
+  accent-color: var(--primary);
+  width: 20px;
+  height: 20px;
+}

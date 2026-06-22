@@ -1,6 +1,6 @@
-import { fetchRecipes } from '../api/recipes'
-import { ResultSection } from './ResultSection'
-import { Pagination } from './Pagination'
+import { fetchRecipes } from '../../api/recipes'
+import { ResultSection } from '../ResultSection/ResultSection'
+import { Pagination } from '../Pagination/Pagination'
 
 const ITEMS_PER_PAGE = Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE) || 10
 

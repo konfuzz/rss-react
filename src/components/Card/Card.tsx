@@ -1,9 +1,9 @@
-import type { Recipe } from "../types";
+import type { Recipe } from "../../types";
 import { Link } from "@/i18n/navigation"
 import Image from "next/image";
-import { Checkbox } from "./Checkbox";
+import { Checkbox } from "../Checkbox/Checkbox";
 import { getTranslations } from 'next-intl/server'
-
+import styles from './Card.module.css'
 
 interface Props {
   data: Recipe;
@@ -24,11 +24,11 @@ export default async function Card(props: Props) {
 
   return (
     <Link href={url} prefetch={false}>
-      <div className="card">
+      <div className={styles.card}>
         <Image src={data.image} alt={data.name} width={340} height={280} />
 
-        <div className="card__content">
-          <div className="card__header">
+        <div className={styles.card__content}>
+          <div className={styles.card__header}>
             <h3>{data.name}</h3>
             <span className="badge">{data.difficulty}</span>
           </div>

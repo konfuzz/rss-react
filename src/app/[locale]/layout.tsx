@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
-import { Header } from '../../components/Header'
+import { Header } from '../../components/Header/Header'
 import ThemeProvider from '../theme-provider'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

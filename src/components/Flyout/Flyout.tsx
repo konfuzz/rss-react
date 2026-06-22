@@ -1,7 +1,8 @@
 'use client'
 
-import { useSelectedStore } from "../store/useSelectedStore";
+import { useSelectedStore } from "../../store/useSelectedStore";
 import { useTranslations } from 'next-intl'
+import styles from './Flyout.module.css'
 
 export function Flyout() {
   const t = useTranslations('Flyout')
@@ -26,7 +27,7 @@ export function Flyout() {
   }
 
   return (
-    <div className="flyout">
+    <div className={styles.flyout}>
       <div className="selected">{selectedRecipes.length} {t('selected')}</div>
       <button className="unselect" onClick={unselectAll}>
         {t('unselectAll')}

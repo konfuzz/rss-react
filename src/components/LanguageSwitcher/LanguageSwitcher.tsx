@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
+import styles from './LanguageSwitcher.module.css'
 
 export function LanguageSwitcher() {
   const t = useTranslations('LanguageSwitcher')
@@ -18,7 +19,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="language-switcher">
+    <div className={styles['language-switcher']}>
       <select value={locale} onChange={(e) => switchLang(e.target.value)}>
         <option value="en">{t('en')}</option>
         <option value="ru">{t('ru')}</option>

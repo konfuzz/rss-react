@@ -1,0 +1,32 @@
+.about {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.about p {
+  margin: 0;
+  color: var(--text-light);
+  font-size: 15px;
+}
+
+.about a {
+  color: var(--primary);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.about a:hover {
+  color: var(--primary-hover);
+}

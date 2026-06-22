@@ -1,6 +1,7 @@
-import Card from "./Card";
-import type { Recipe } from "../types";
+import Card from "../Card/Card";
+import type { Recipe } from "../../types";
 import { getTranslations } from 'next-intl/server'
+import styles from './ResultSection.module.css'
 
 interface Props {
   items: Recipe[];
@@ -15,7 +16,7 @@ export async function ResultSection({items, page}: Props) {
   )
 
   return (    
-    <section className="results">
+    <section className={styles.results}>
       {items.map((item: Recipe) => <Card key={item.id} data={item} page={page} />)}
     </section>
   );
