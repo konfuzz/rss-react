@@ -1,5 +1,6 @@
 import type { Recipe } from "../types";
 import Link from "next/link";
+import Image from "next/image";
 import { Checkbox } from "./Checkbox";
 
 
@@ -22,7 +23,7 @@ export function Card(props: Props) {
   return (
     <Link href={url} prefetch={false}>
       <div className="card">
-        <img src={data.image} alt={data.name} />
+        <Image src={data.image} alt={data.name} width={340} height={280} />
 
         <div className="card__content">
           <div className="card__header">

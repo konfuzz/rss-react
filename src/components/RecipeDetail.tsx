@@ -1,5 +1,6 @@
 import { fetchRecipeById } from "../api/recipes";
 import Link from "next/link";
+import Image from "next/image";
 import type { Recipe } from "../types";
 
 interface Props {
@@ -33,7 +34,7 @@ export async function RecipeDetail({ detailsId, page }: Props) {
   return (
     <div className="detail-panel">
       <Link href={url}><button className="detail-close">✕</button></Link>
-      <img className="detail-image" src={recipe.image} alt={recipe.name} />
+      <Image className="detail-image" src={recipe.image} alt={recipe.name} width={640} height={400} />
       <div className="detail-header">
         <h2>{recipe.name}</h2>
         <span className="badge">{recipe.difficulty}</span>
