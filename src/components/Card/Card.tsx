@@ -8,19 +8,17 @@ import styles from './Card.module.css'
 interface Props {
   data: Recipe;
   page: string | undefined;
+  query: string;
 }
 
 export default async function Card(props: Props) {
   const t = await getTranslations('RecipeDetail')
-  const { data, page } = props;
+  const { data, page, query } = props;
 
-  let url: string;
-
-  if (page) {
-    url = `/?page=${page}&details=${data.id}`;
-  } else {
-    url = `/?details=${data.id}`;
-  }
+  const params = new URLSearchParams({ details: String(data.id) });
+  if (page) params.set('page', page);
+  if (query) params.set('query', query);
+  const url = `/?${params.toString()}`;
 
   return (
     <Link href={url} prefetch={false}>

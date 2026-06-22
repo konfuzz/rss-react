@@ -14,9 +14,10 @@ export default async function RecipeResults({ query, page }: { query: string, pa
       <ResultSection
         items={data?.recipes ?? []}
         page={page}
+        query={query}
       />
       {totalPages > 1 && (
-        <Pagination currentPage={page ? Number(page) : 1} totalPages={totalPages} />
+        <Pagination currentPage={page ? Number(page) : 1} totalPages={totalPages} query={query} />
       )}
     </>
   )

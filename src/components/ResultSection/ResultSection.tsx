@@ -6,9 +6,10 @@ import styles from './ResultSection.module.css'
 interface Props {
   items: Recipe[];
   page: string | undefined;
+  query: string;
 }
 
-export async function ResultSection({items, page}: Props) {
+export async function ResultSection({items, page, query}: Props) {
   const t = await getTranslations('ResultSection')
 
   if (items.length === 0) return (
@@ -17,7 +18,7 @@ export async function ResultSection({items, page}: Props) {
 
   return (    
     <section className={styles.results}>
-      {items.map((item: Recipe) => <Card key={item.id} data={item} page={page} />)}
+      {items.map((item: Recipe) => <Card key={item.id} data={item} page={page} query={query} />)}
     </section>
   );
 }
