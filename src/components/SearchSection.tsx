@@ -1,13 +1,9 @@
-interface Props {
-  searchHandler: (e: React.SubmitEvent<HTMLFormElement>) => void;
-  query: string;
-}
+import { search } from "../actions/search";
 
-export function SearchSection(props: Props) {
-  const { searchHandler, query } = props;
+export function SearchSection({ query }: { query: string }) {
   return (
     <section className="search">
-      <form className="search__inner" onSubmit={searchHandler}>
+      <form className="search__inner" action={search}>
         <input
           name="query"
           type="text"

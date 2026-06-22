@@ -1,36 +1,38 @@
-import { useSearchParams, useOutletContext } from "react-router";
-import { useRecipeDetailQuery } from "../hooks/useRecipeDetailQuery";
+import { fetchRecipeById } from "../api/recipes";
+import Link from "next/link";
+import type { Recipe } from "../types";
 
-export default function RecipeDetail() {
-  const [searchParams] = useSearchParams();
-  const { onClose } = useOutletContext<{ onClose: () => void }>();
-  const detailsId = searchParams.get('details');
+interface Props {
+  detailsId: string | null
+  page: string | undefined
+}
 
-  const { data: recipe, isPending, error } = useRecipeDetailQuery(detailsId);
+export async function RecipeDetail({ detailsId, page }: Props) {
+  if (!detailsId) return null
 
-  if (isPending) {
-    return (
-      <div className="detail-panel">
-        <button className="detail-close" onClick={onClose}>✕</button>
-        <div className="detail-loading" />
-        <div className="detail-loading" style={{ height: 200 }} />
-        <div className="detail-loading" />
-      </div>
-    );
+  let recipe: Recipe;
+  let url: string;
+
+  if (page) {
+    url = `/?page=${page}`;
+  } else {
+    url = `/`;
   }
 
-  if (error || !recipe) {
+  try {
+    recipe = await fetchRecipeById(detailsId);
+  } catch {
     return (
       <div className="detail-panel">
-        <button className="detail-close" onClick={onClose}>✕</button>
-        <p className="error-message">{error ? "Failed to load recipe details." : "Recipe not found."}</p>
+        <p className="error-message">Failed to load recipe details.</p>
+        <Link href={url}><button className="detail-close">✕</button></Link>
       </div>
-    );
+    )
   }
-  
+
   return (
     <div className="detail-panel">
-      <button className="detail-close" onClick={onClose}>✕</button>
+      <Link href={url}><button className="detail-close">✕</button></Link>
       <img className="detail-image" src={recipe.image} alt={recipe.name} />
       <div className="detail-header">
         <h2>{recipe.name}</h2>
@@ -62,10 +64,10 @@ export default function RecipeDetail() {
           <span key={tag}>{tag}</span>
         ))}
       </div>
-      <p className="detail-cuisine">{recipe.cuisine} · {recipe.mealType.join(", ")}</p>
+      <p className="detail-cuisine">{recipe.cuisine} · {recipe.mealType.join(', ')}</p>
       <div className="rating">
         ⭐ {recipe.rating} <span>({recipe.reviewCount} reviews)</span>
       </div>
     </div>
-  );
+  )
 }

@@ -1,23 +1,32 @@
+'use client'
+
 import { useSelectedStore } from "../store/useSelectedStore";
-import { generateCSV } from "../utils/generateCSV";
 
 export function Flyout() {
 
   const { selectedRecipes, unselectAll } = useSelectedStore();
-  const handleDownload = () => {
-    const csv = generateCSV(Array.from(selectedRecipes.values()));
-    const blob = new Blob([csv], { type: "text/csv" });
+
+  if (selectedRecipes.length === 0) return null;
+  
+  const handleDownload = async () => {
+    const ids = selectedRecipes;
+    const res = await fetch('/api/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const blob = await res.blob();
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = `${selectedRecipes.size}_items.csv`;
+    a.download = `${selectedRecipes.length}_items.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
   return (
     <div className="flyout">
-      <div className="selected">{selectedRecipes.size} selected</div>
+      <div className="selected">{selectedRecipes.length} selected</div>
       <button className="unselect" onClick={unselectAll}>
         Unselect All
       </button>

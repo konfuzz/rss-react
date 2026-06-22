@@ -1,23 +1,24 @@
-import { NavLink } from "react-router";
+'use client'
+
+import Link from "next/link";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
-import { useQueryClient } from '@tanstack/react-query'
-
+import { useRouter } from "next/navigation";
 
 export function Header() {
-  const queryClient = useQueryClient();
   const { isDark, toggleTheme } = useContext(AppContext);
+  const router = useRouter();
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries()
+    router.refresh();
   }
 
   return (
     <header className="header">
       <h1>Recipe Search</h1>
       <nav>
-        <NavLink to="/" end>Home</NavLink>
-        <NavLink to="/about">About</NavLink>
+        <Link href="/">Home</Link>
+        <Link href="/about">About</Link>
       </nav>
       <div className="menu-buttons">
         <button className="refresh-btn" onClick={handleRefresh} title="Refresh data">
