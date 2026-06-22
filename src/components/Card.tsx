@@ -1,7 +1,8 @@
 import type { Recipe } from "../types";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation"
 import Image from "next/image";
 import { Checkbox } from "./Checkbox";
+import { getTranslations } from 'next-intl/server'
 
 
 interface Props {
@@ -9,7 +10,8 @@ interface Props {
   page: string | undefined;
 }
 
-export function Card(props: Props) {
+export default async function Card(props: Props) {
+  const t = await getTranslations('RecipeDetail')
   const { data, page } = props;
 
   let url: string;
@@ -32,9 +34,9 @@ export function Card(props: Props) {
           </div>
 
           <div className="meta">
-            <span>🍽 {data.servings} servings</span>
-            <span>⏱ {data.prepTimeMinutes + data.cookTimeMinutes} min</span>
-            <span>🔥 {data.caloriesPerServing} kcal</span>
+            <span>🍽 {data.servings} {t('servings')}</span>
+            <span>⏱ {data.prepTimeMinutes + data.cookTimeMinutes} {t('min')}</span>
+            <span>🔥 {data.caloriesPerServing} {t('kcal')}</span>
           </div>
 
           <div className="tags">
@@ -42,7 +44,7 @@ export function Card(props: Props) {
           </div>
 
           <div className="rating">
-            ⭐ {data.rating} <span>({data.reviewCount} reviews)</span>
+            ⭐ {data.rating} <span>({data.reviewCount} {t('reviews')})</span>
           </div>
           <Checkbox id={data.id} />
         </div>

@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 export default function Error({
   error,
@@ -7,12 +8,12 @@ export default function Error({
   error: Error & { digest?: string }
   unstable_retry: () => void
 }) {
-
+  const t = useTranslations('Error')
   return (
     <div className="error-boundary-fallback">
-      <h2>Something went wrong</h2>
+      <h2>{t('title')}</h2>
       <p>{error.message}</p>
-      <button onClick={() => unstable_retry()} className="button">Reload</button>
+      <button onClick={() => unstable_retry()} className="button">{t('reload')}</button>
     </div>
   )
 }

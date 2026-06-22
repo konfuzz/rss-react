@@ -1,9 +1,10 @@
 'use client'
 
 import { useSelectedStore } from "../store/useSelectedStore";
+import { useTranslations } from 'next-intl'
 
 export function Flyout() {
-
+  const t = useTranslations('Flyout')
   const { selectedRecipes, unselectAll } = useSelectedStore();
 
   if (selectedRecipes.length === 0) return null;
@@ -26,12 +27,12 @@ export function Flyout() {
 
   return (
     <div className="flyout">
-      <div className="selected">{selectedRecipes.length} selected</div>
+      <div className="selected">{selectedRecipes.length} {t('selected')}</div>
       <button className="unselect" onClick={unselectAll}>
-        Unselect All
+        {t('unselectAll')}
       </button>
       <button className="download-btn" onClick={handleDownload}>
-        Download
+        {t('download')}
       </button>
     </div>
   )

@@ -1,14 +1,17 @@
-import { Card } from "./Card";
+import Card from "./Card";
 import type { Recipe } from "../types";
+import { getTranslations } from 'next-intl/server'
 
 interface Props {
   items: Recipe[];
   page: string | undefined;
 }
 
-export function ResultSection({items, page}: Props) {
+export async function ResultSection({items, page}: Props) {
+  const t = await getTranslations('ResultSection')
+
   if (items.length === 0) return (
-    <p className="no-results">No results found. Try harder...</p>
+    <p className="no-results">{t('noResults')}</p>
   )
 
   return (    

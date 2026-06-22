@@ -1,16 +1,18 @@
 import { search } from "../actions/search";
+import { getTranslations } from 'next-intl/server'
 
-export function SearchSection({ query }: { query: string }) {
+export async function SearchSection({ query }: { query: string }) {
+  const t = await getTranslations('SearchSection')
   return (
     <section className="search">
       <form className="search__inner" action={search}>
         <input
           name="query"
           type="text"
-          placeholder="Search recipes..."
+          placeholder={t('placeholder')}
           defaultValue={query}
         />
-        <button type="submit">Search</button>
+        <button type="submit">{t('button')}</button>
       </form>
     </section>
   );

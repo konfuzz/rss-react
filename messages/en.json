@@ -41,7 +41,8 @@
     "reload": "Reload"
   },
   "TestErrorButton": {
-    "label": "Simulate Error"
+    "label": "Simulate Error",
+    "error": "Test error from button! Please reload the page."
   },
   "Metadata": {
     "title": "Recipe Search",

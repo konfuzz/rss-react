@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from "react";
+import { useTranslations } from 'next-intl'
 
 export function TestErrorButton() {
+  const t = useTranslations('TestErrorButton')
   const [throwError, setThrowError] = useState(false);
 
   const handleClick = () => {
@@ -10,12 +12,12 @@ export function TestErrorButton() {
   }
 
   if (throwError) {
-    throw new Error("Test error from button! Please reload the page.");
+    throw new Error(t('error'));
   }
 
   return (
     <button className="test-error-btn" onClick={handleClick}>
-      🧪 Simulate Error
+      🧪 {t('label')}
     </button>
   );
 }

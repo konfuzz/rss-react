@@ -1,11 +1,13 @@
 'use client'
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation"
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation"
+import { useTranslations } from 'next-intl'
 
 export function Header() {
+  const t = useTranslations('Header')
   const { isDark, toggleTheme } = useContext(AppContext);
   const router = useRouter();
 
@@ -15,17 +17,17 @@ export function Header() {
 
   return (
     <header className="header">
-      <h1>Recipe Search</h1>
+      <h1>{t('title')}</h1>
       <nav>
-        <Link href="/">Home</Link>
-        <Link href="/about">About</Link>
+        <Link href="/">{t('home')}</Link>
+        <Link href="/about">{t('about')}</Link>
       </nav>
       <div className="menu-buttons">
         <button className="refresh-btn" onClick={handleRefresh} title="Refresh data">
           ↻
         </button>
         <button onClick={toggleTheme}>
-          {isDark ? "Light Mode" : "Dark Mode"}
+          {isDark ? t('lightMode') : t('darkMode')}
         </button>
       </div>
     </header>
