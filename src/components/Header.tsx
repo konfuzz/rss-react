@@ -5,6 +5,7 @@ import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
 import { useRouter } from "@/i18n/navigation"
 import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 export function Header() {
   const t = useTranslations('Header')
@@ -26,6 +27,7 @@ export function Header() {
         <button className="refresh-btn" onClick={handleRefresh} title="Refresh data">
           ↻
         </button>
+        <LanguageSwitcher />
         <button onClick={toggleTheme}>
           {isDark ? t('lightMode') : t('darkMode')}
         </button>

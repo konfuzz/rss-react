@@ -301,6 +301,23 @@ button:hover {
   gap: 8px;
 }
 
+.language-switcher select {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  height: 100%;
+}
+
+.language-switcher select:hover {
+  border-color: var(--primary);
+}
+
 /* ABOUT PAGE */
 .about {
   background: var(--card-bg);
