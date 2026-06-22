@@ -1,0 +1,54 @@
+{
+  "Header": {
+    "title": "Recipe Search",
+    "home": "Home",
+    "about": "About",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "SearchSection": {
+    "placeholder": "Search recipes...",
+    "button": "Search"
+  },
+  "ResultSection": {
+    "noResults": "No results found. Try harder..."
+  },
+  "RecipeDetail": {
+    "failedToLoad": "Failed to load recipe details.",
+    "ingredients": "Ingredients",
+    "instructions": "Instructions",
+    "servings": "servings",
+    "min": "min",
+    "kcal": "kcal",
+    "reviews": "reviews"
+  },
+  "Flyout": {
+    "selected": "selected",
+    "unselectAll": "Unselect All",
+    "download": "Download"
+  },
+  "NotFound": {
+    "message": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "backToHome": "Back to Home"
+  },
+  "About": {
+    "title": "About",
+    "author": "Author:"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "reload": "Reload"
+  },
+  "TestErrorButton": {
+    "label": "Simulate Error"
+  },
+  "Metadata": {
+    "title": "Recipe Search",
+    "description": "Search and discover recipes"
+  },
+  "LanguageSwitcher": {
+    "en": "EN",
+    "ru": "RU"
+  }
+}
